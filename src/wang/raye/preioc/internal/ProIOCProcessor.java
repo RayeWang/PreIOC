@@ -10,8 +10,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -50,9 +48,21 @@ public class ProIOCProcessor extends AbstractProcessor {
 
 		elementUtils = env.getElementUtils();
 	}
+	
+	/**
+	 * 获取所有需要处理的注解类
+	 */
+	@Override
+	public Set<String> getSupportedAnnotationTypes() {
+		Set<String> types = new LinkedHashSet<>();
+		types.add(BindById.class.getCanonicalName());
+		return types;
+	}
 
 	@Override
 	public boolean process(Set<? extends TypeElement> elements, RoundEnvironment env) {
+		writeLog("this is ProIOC process ");
+		//被注解的类和类中属性相关的注解键值对
 		LinkedHashMap<TypeElement, BindClass> targetClassMap = parseTargets(env);
 		return true;
 	}
@@ -65,8 +75,10 @@ public class ProIOCProcessor extends AbstractProcessor {
 	 */
 	private LinkedHashMap<TypeElement, BindClass> parseTargets(RoundEnvironment env) {
 		LinkedHashMap<TypeElement, BindClass> targets = new LinkedHashMap<>();
+		//哪些类以及是处理过的
 		LinkedHashSet<String> erasedTargetNames = new LinkedHashSet<>();
 		for (Element element : env.getElementsAnnotatedWith(BindById.class)) {
+			//绑定控件的
 			try {
 				parseBindById(element, targets, erasedTargetNames);
 			} catch (Exception e) {
@@ -92,13 +104,16 @@ public class ProIOCProcessor extends AbstractProcessor {
 		if (elementType.getKind() == TypeKind.ARRAY) {
 			// 多个绑定，暂时不做
 			// parseBindMany(element, targets, erasedTargetNames);
+		}else{
+			parseBindOne(element, targets, erasedTargetNames);
 		}
 	}
 
 	private void parseBindOne(Element element, Map<TypeElement, BindClass> targets, Set<String> erasedTargetNames) {
 		boolean hasError = false;
+		//获取被当前注解Element所在的类的TypeElement
 		TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
-
+		//获取当前被注解的属性的类型的TypeMirror
 		TypeMirror elementType = element.asType();
 		if (elementType.getKind() == TypeKind.TYPEVAR) {
 			TypeVariable typeVariable = (TypeVariable) elementType;
@@ -134,20 +149,33 @@ public class ProIOCProcessor extends AbstractProcessor {
 		}
 
 		String name = element.getSimpleName().toString();
+		writeLog("this elementType kind is:%s", elementType.getKind().name());
+
 		TypeName type = TypeName.get(elementType);
 
 		FieldViewBindTypeAndName binding = new FieldViewBindTypeAndName(name, type);
 		bindingClass.addField(id, binding);
-
+		writeLog("parseBindOne erasedTargetNames.add(%s)  ,new FieldViewBindTyp"
+				+ "eAndName(%s, %s)   bindingClass.addField(%s,binding)",
+				enclosingElement.toString(),name,type,id);
+		
 		erasedTargetNames.add(enclosingElement.toString());
 	}
 
+	/**
+	 * 获取或者创建一个BindClass，
+	 * @param targetClassMap 注解所在的类与注解绑定的属性键值对集合
+	 * @param enclosingElement 当前处理的类
+	 * @return
+	 */
 	private BindClass getOrCreateTargetClass(Map<TypeElement, BindClass> targetClassMap,
 			TypeElement enclosingElement) {
+		writeLog("getOrCreateTargetClass TypeElement:%s",enclosingElement.getQualifiedName().toString());
 		BindClass bindingClass = targetClassMap.get(enclosingElement);
 		if (bindingClass == null) {
 			String targetType = enclosingElement.getQualifiedName().toString();
 			String classPackage = getPackageName(enclosingElement);
+			
 			String className = getClassName(enclosingElement, classPackage) + BINDING_CLASS_SUFFIX;
 
 			bindingClass = new BindClass(classPackage, className, targetType);
@@ -235,15 +263,7 @@ public class ProIOCProcessor extends AbstractProcessor {
 		return false;
 	}
 
-	/**
-	 * 获取所有需要处理的注解类
-	 */
-	@Override
-	public Set<String> getSupportedAnnotationTypes() {
-		Set<String> types = new LinkedHashSet<>();
-		types.add(BindById.class.getCanonicalName());
-		return types;
-	}
+	
 
 	/**
 	 * 判断注解使用使用错误
@@ -307,6 +327,15 @@ public class ProIOCProcessor extends AbstractProcessor {
 		try {
 			FileWriter fw = new FileWriter(new File("D:/PreIOCLog.txt"), true);
 			fw.write(String.format(message, args) + "\n");
+			fw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	private void writeLog(String message) {
+		try {
+			FileWriter fw = new FileWriter(new File("D:/PreIOCLog.txt"), true);
+			fw.write(message + "\n");
 			fw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
