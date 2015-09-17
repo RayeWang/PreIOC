@@ -1,6 +1,6 @@
 package wang.raye.preioc;
 
-import wang.raye.preioc.ProIOC.Finder;
+import wang.raye.preioc.find.AbstractFind;
 
 /**
  * 绑定控件的接口，用于自动生成的代码中具体实现
@@ -9,5 +9,5 @@ import wang.raye.preioc.ProIOC.Finder;
  */
 public interface ViewBinder<T> {
 
-	public void binder(final Finder finder, final T target, Object source);
+	public void binder(final AbstractFind finder, final T target, Object source);
 }

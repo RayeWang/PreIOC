@@ -62,7 +62,7 @@ public final class BindClass {
 		// 有控件需要被绑定，导入View包
 		if ((!this.viewIdMap.isEmpty())) {
 			builder.append("import android.view.View;\n");
-			builder.append("import wang.raye.preioc.ProIOC.Finder;\n");
+			builder.append("import wang.raye.preioc.find.AbstractFind;\n");
 		}
 		// 需要处理控件绑定，导入接口
 		if (this.parentViewBinder == null) {
@@ -91,7 +91,7 @@ public final class BindClass {
 	 */
 	private void autoBindMethod(StringBuilder builder) {
 		builder.append("  @Override ")
-				.append("public void binder(final Finder finder, final T target, Object source) {\n");
+				.append("public void binder(final AbstractFind finder, final T target, Object source) {\n");
 		if (this.parentViewBinder != null) {
 			builder.append("    super.binder(finder, target, source);\n\n");
 		}
