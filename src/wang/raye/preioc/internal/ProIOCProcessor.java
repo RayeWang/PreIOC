@@ -9,6 +9,7 @@ import static javax.tools.Diagnostic.Kind.ERROR;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -28,6 +29,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
+import javax.tools.JavaFileObject;
 
 import wang.raye.preioc.annotation.BindById;
 
@@ -69,11 +71,16 @@ public class ProIOCProcessor extends AbstractProcessor {
 			TypeElement typeElement = entry.getKey();
 			BindClass bindingClass = entry.getValue();
 
-//			try {
-				writeLog(bindingClass.toJava());
-//			} catch (IOException e) {
-//				error(typeElement, "Unable to write view binder for type %s: %s", typeElement, e.getMessage());
-//			}
+			try {
+				JavaFileObject jfo = this.filer.createSourceFile(bindingClass.getFqcn(), new Element[] { typeElement });
+		        Writer writer = jfo.openWriter();
+		        writer.write(bindingClass.toJava());
+		        writer.flush();
+		        writer.close();
+					writeLog(bindingClass.toJava());
+			} catch (IOException e) {
+				error(typeElement, "Unable to write view binder for type %s: %s", typeElement, e.getMessage());
+			}
 		}
 		return true;
 	}

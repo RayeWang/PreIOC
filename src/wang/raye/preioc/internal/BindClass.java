@@ -62,6 +62,7 @@ public final class BindClass {
 		// 有控件需要被绑定，导入View包
 		if ((!this.viewIdMap.isEmpty())) {
 			builder.append("import android.view.View;\n");
+			builder.append("import wang.raye.preioc.ProIOC.Finder;\n");
 		}
 		// 需要处理控件绑定，导入接口
 		if (this.parentViewBinder == null) {
@@ -94,30 +95,34 @@ public final class BindClass {
 		if (this.parentViewBinder != null) {
 			builder.append("    super.binder(finder, target, source);\n\n");
 		}
-		if((!this.viewIdMap.isEmpty())){
-			//需要绑定控件
-			for(ViewBindById bindById : viewIdMap.values()){
+		if ((!this.viewIdMap.isEmpty())) {
+			// 需要绑定控件
+			for (ViewBindById bindById : viewIdMap.values()) {
 				autoViewBinding(builder, bindById);
 			}
 		}
-	    builder.append("  }\n");
+		builder.append("  }\n");
 	}
-	
+
 	/**
 	 * 自动生成控件获取的代码
-	 * @param builder 代码StringBuilder
-	 * @param bindById 控件的id与filed绑定的对象
+	 * 
+	 * @param builder
+	 *            代码StringBuilder
+	 * @param bindById
+	 *            控件的id与filed绑定的对象
 	 */
-	private void autoViewBinding(StringBuilder builder,ViewBindById bindById){
-		builder.append("    target.")
-        .append(bindById.getField().getName())
-        .append(" = ");
+	private void autoViewBinding(StringBuilder builder, ViewBindById bindById) {
+		builder.append("    target.").append(bindById.getField().getName()).append(" = ");
 		builder.append("(").append(bindById.getField().getType()).append(")");
-		builder.append("finder.findRequiredView(source")
-        .append(", ")
-        .append(bindById.getId()).append(", \"")
-        .append(bindById.getField().getName());
-		
-        builder.append("\");\n");
+		builder.append("finder.findRequiredView(source").append(", ").append(bindById.getId()).append(", \"")
+				.append(bindById.getField().getName());
+
+		builder.append("\");\n");
+	}
+
+	protected String getFqcn() {
+		// TODO 有空改名
+		return new StringBuilder().append(this.classPackage).append(".").append(this.className).toString();
 	}
 }
