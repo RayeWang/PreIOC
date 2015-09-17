@@ -1,11 +1,10 @@
 package wang.raye.preioc.internal;
 
-import com.squareup.javapoet.TypeName;
 
 /**
  * 保存属性名字与类型的关系类
  * 目前没有reques，与参考的butterknife不一样
- * @author Ray
+ * @author Raye
  *
  */
 public class FieldViewBindTypeAndName {
@@ -16,9 +15,9 @@ public class FieldViewBindTypeAndName {
 	/**
 	 * 类型
 	 */
-	private final TypeName type;
+	private final String type;
 
-	protected FieldViewBindTypeAndName(String name, TypeName type) {
+	protected FieldViewBindTypeAndName(String name, String type) {
 		this.name = name;
 		this.type = type;
 	}
@@ -27,7 +26,7 @@ public class FieldViewBindTypeAndName {
 		return name;
 	}
 
-	public TypeName getType() {
+	public String getType() {
 		return type;
 	}
 

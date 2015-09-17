@@ -1,7 +1,7 @@
 package wang.raye.preioc.internal;
 /**
  * 保存了绑定的属性的参数（field）以及控件的id
- * @author Ray
+ * @author Raye
  *
  */
 public final class ViewBindById {
@@ -15,4 +15,14 @@ public final class ViewBindById {
 	 protected void setField(FieldViewBindTypeAndName field){
 		 this.field = field;
 	 }
+
+	public int getId() {
+		return id;
+	}
+
+	public FieldViewBindTypeAndName getField() {
+		return field;
+	}
+	 
+	 
 }

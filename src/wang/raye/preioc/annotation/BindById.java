@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * 根据id绑定控件的注解
- * @author Ray
+ * @author Raye
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.FIELD)
