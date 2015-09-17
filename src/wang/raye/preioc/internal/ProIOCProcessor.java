@@ -1,4 +1,4 @@
-package com.ray.preioc.internal;
+package wang.raye.preioc.internal;
 
 import static javax.lang.model.element.ElementKind.CLASS;
 import static javax.lang.model.element.ElementKind.INTERFACE;
@@ -32,7 +32,8 @@ import javax.lang.model.util.Elements;
 
 import com.squareup.javapoet.TypeName;
 
-import com.ray.preioc.annotation.BindById;
+import wang.raye.preioc.annotation.BindById;
+
 
 /**
  * 注解预处理的类
@@ -41,7 +42,7 @@ import com.ray.preioc.annotation.BindById;
  */
 public class ProIOCProcessor extends AbstractProcessor {
 	static final String VIEW_TYPE = "android.view.View";
-	private static final String BINDING_CLASS_SUFFIX = "$$ViewBindById";
+	private static final String BINDING_CLASS_SUFFIX = "$$ViewBinder";
 	private Elements elementUtils;
 
 	public synchronized void init(ProcessingEnvironment env) {
