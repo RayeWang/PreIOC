@@ -1,16 +1,12 @@
 package wang.raye.preioc;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.content.Context;
 import android.util.Log;
-import android.view.View;
 import wang.raye.preioc.find.AbstractFind;
+import wang.raye.preioc.find.ActivityFind;
 /**
  * 进行依赖注入的类
  * 与普通注解框架不同的是此注解是调用预编译好的代码实现注入，
@@ -18,7 +14,6 @@ import wang.raye.preioc.find.AbstractFind;
  * @author Raye
  *
  */
-import wang.raye.preioc.find.ActivityFind;
 public class PreIOC {
 
 	private static final boolean debug = true;
