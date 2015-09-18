@@ -19,10 +19,10 @@ import wang.raye.preioc.find.AbstractFind;
  *
  */
 import wang.raye.preioc.find.ActivityFind;
-public class ProIOC {
+public class PreIOC {
 
 	private static final boolean debug = true;
-	private static final String TAG = ProIOC.class.getName();
+	private static final String TAG = PreIOC.class.getName();
 	private static final ViewBinder<Object> NULL_BIND = new ViewBinder<Object>() {
 		
 		@Override
