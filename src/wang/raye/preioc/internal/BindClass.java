@@ -1,7 +1,10 @@
 package wang.raye.preioc.internal;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Map.Entry;
+
+import android.view.View;
 
 /**
  * 保存类中的注解与相关的属性，方法绑定的值
@@ -11,7 +14,11 @@ import java.util.Map;
  */
 public final class BindClass {
 	/** 控件与ID绑定的集合 */
-	private final Map<Integer, ViewBindById> viewIdMap = new LinkedHashMap<>();
+	private final LinkedHashMap<Integer, ViewBindById> viewIdMap = new LinkedHashMap<>();
+	/** 保存OnClick事件的id与方法名*/
+	private final LinkedHashMap<Integer,String> onClicks = new LinkedHashMap<>();
+	/** 已经创建过的监听，对应onClicks的value,防止每个OnClickLisenter建立一个监听*/
+	private ArrayList<String> onClickListener = new ArrayList<>();
 	/** 包名 */
 	private final String classPackage;
 	/** 注解处理的类名，通过反射实例化这个类来 处理 */
@@ -31,7 +38,20 @@ public final class BindClass {
 		getOrCreateViewBindings(id).setField(binding);
 
 	}
-
+	/**
+	 * 添加一个OnClick事件的方法
+	 * @param id 使用此方法的控件id集合
+	 * @param name 
+	 */
+	protected void addOnClick(int[] ids,String methonName) {
+		if(ids != null){
+			for(int id : ids){
+				onClicks.put(id, methonName);
+			}
+		}
+	}
+	
+	
 	private ViewBindById getOrCreateViewBindings(int id) {
 		ViewBindById viewId = viewIdMap.get(id);
 		if (viewId == null) {
@@ -81,7 +101,12 @@ public final class BindClass {
 
 		autoBindMethod(builder);
 		builder.append('\n');
+		//绑定onClickListener
+		for(Entry<Integer, String> entry : onClicks.entrySet()){
+			bindOnClick(builder,entry.getKey(),null);
+		}
 
+		builder.append("  }\n");
 		builder.append("}\n");
 		return builder.toString();
 	}
@@ -101,7 +126,6 @@ public final class BindClass {
 				autoViewBinding(builder, bindById);
 			}
 		}
-		builder.append("  }\n");
 	}
 
 	/**
@@ -117,8 +141,43 @@ public final class BindClass {
 		builder.append("(").append(bindById.getField().getType()).append(")");
 		builder.append("finder.findRequiredView(source").append(", ").append(bindById.getId()).append(", \"")
 				.append(bindById.getField().getName());
-
 		builder.append("\");\n");
+		//绑定onClickListener
+		bindOnClick(builder,bindById.getId(),bindById.getField().getName());
+	}
+	
+	/**
+	 * 设置为控件设置监听
+	 * @param builder 代码StringBuilder
+	 * @param id 空间的id
+	 * @param viewName 控件的名称（如果为空说明此控件不需要引用）
+	 */
+	private void bindOnClick(StringBuilder builder,int id,String viewName){
+		//获取监听的方法
+		if(!onClicks.containsKey(id)){
+			//此id不需要设置OnClickListener
+			return;
+		}
+		String methonName = onClicks.get(id);
+		if(!onClickListener.contains(methonName)){
+			
+			//监听不存在，创建监听
+			builder.append("	View.OnClickListener ").append(methonName).append(" = new View.OnClickListener() {\n")
+			.append("		public void onClick(View view) {\n			target.").append(methonName)
+			.append("(view);\n").append("			}\n		};\n");
+			//已经建立OnClickListener监听了
+			onClickListener.add(methonName);
+			View view = null;
+		}
+		if(viewName == null){
+			//不需要被引用的
+			builder.append("	((View)finder.findRequiredView(source").append(", ").append(id).append(", \"")
+				.append("\")).setOnClickListener(").append(methonName).append(");\n");
+		}else{
+			builder.append("    target.").append(viewName).append(".setOnClickListener(").append(methonName).append(");\n");
+			//避免后面的重新设置
+			onClicks.remove(id);
+		}
 	}
 
 	protected String getFqcn() {

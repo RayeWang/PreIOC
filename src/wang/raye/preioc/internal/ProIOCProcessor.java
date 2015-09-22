@@ -2,6 +2,7 @@ package wang.raye.preioc.internal;
 
 import static javax.lang.model.element.ElementKind.CLASS;
 import static javax.lang.model.element.ElementKind.INTERFACE;
+import static javax.lang.model.element.ElementKind.METHOD;
 import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.lang.model.element.Modifier.STATIC;
 import static javax.tools.Diagnostic.Kind.ERROR;
@@ -11,6 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -22,6 +24,7 @@ import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -32,6 +35,7 @@ import javax.lang.model.util.Elements;
 import javax.tools.JavaFileObject;
 
 import wang.raye.preioc.annotation.BindById;
+import wang.raye.preioc.annotation.OnClick;
 
 /**
  * 注解预处理的类
@@ -59,6 +63,7 @@ public class ProIOCProcessor extends AbstractProcessor {
 	public Set<String> getSupportedAnnotationTypes() {
 		Set<String> types = new LinkedHashSet<>();
 		types.add(BindById.class.getCanonicalName());
+		types.add(OnClick.class.getCanonicalName());
 		return types;
 	}
 
@@ -103,6 +108,15 @@ public class ProIOCProcessor extends AbstractProcessor {
 				error(element, BindById.class.getName() + "parse error:%s", e);
 			}
 		}
+		
+		for(Element element : env.getElementsAnnotatedWith(OnClick.class)){
+			//绑定点击事件的
+			try{
+				parseLisenter(element, targets, erasedTargetNames,OnClick.class);
+			}catch(Exception e){
+				error(element, OnClick.class.getName() + "parse error:%s", e);
+			}
+		}
 		return targets;
 	}
 
@@ -129,7 +143,7 @@ public class ProIOCProcessor extends AbstractProcessor {
 
 	private void parseBindOne(Element element, Map<TypeElement, BindClass> targets, Set<String> erasedTargetNames) {
 		boolean hasError = false;
-		// 获取被当前注解Element所在的类的TypeElement
+		// 获取被当前注解Element所在的类的TypeElement（toString等于当前的类名（含包名））
 		TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
 		// 获取当前被注解的属性的类型的TypeMirror
 		TypeMirror elementType = element.asType();
@@ -158,17 +172,16 @@ public class ProIOCProcessor extends AbstractProcessor {
 		if (bindingClass != null) {
 			ViewBindById viewBindings = bindingClass.getViewBinding(id);
 			if (viewBindings != null) {
-				// id已经与控件绑定
-				// TODO 是否是在一个类的范围，如果是多个类会不会冲突
 				return;
 			}
 		} else {
 			bindingClass = getOrCreateTargetClass(targets, enclosingElement);
 		}
-
+		//获取被注解的属性名称
 		String name = element.getSimpleName().toString();
 		writeLog("this elementType kind is:%s", elementType.toString());
 
+		//获取被注解的属性的类型
 		String typeName = elementType.toString();
 		FieldViewBindTypeAndName binding = new FieldViewBindTypeAndName(name, typeName);
 		bindingClass.addField(id, binding);
@@ -202,6 +215,34 @@ public class ProIOCProcessor extends AbstractProcessor {
 			targetClassMap.put(enclosingElement, bindingClass);
 		}
 		return bindingClass;
+	}
+	
+	private void parseLisenter(Element element, LinkedHashMap<TypeElement, BindClass> targets,
+			LinkedHashSet<String> erasedTargetNames,Class annotationClass) throws Exception{
+		
+		//理论上不用判断是否是使用在方法上的
+		//
+		ExecutableElement executableElement = (ExecutableElement) element;
+		// 获取被当前注解Element所在的类的TypeElement（toString等于当前的类名（含包名））
+	    TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
+	    //获取value的值（由于不知制定的类名，所以不能使用方法直接获取）
+	    Annotation annotation = element.getAnnotation(annotationClass);
+	    Method annotationValue = annotationClass.getDeclaredMethod("value");
+	   //理论上是不用判断value是不是int型的
+	    //获取value的值
+	    int[] ids = (int[]) annotationValue.invoke(annotation);
+	    //被注解的方法名称
+	    String methonName = executableElement.getSimpleName().toString();
+	    
+	    BindClass bindingClass = targets.get(enclosingElement);
+	    if(bindingClass != null){
+	    	bindingClass.addOnClick(ids, methonName);
+	    }else{
+	    	//创建一个被注解的类
+	    	bindingClass = getOrCreateTargetClass(targets, enclosingElement);
+	    }
+	    bindingClass.addOnClick(ids, methonName);
+	    erasedTargetNames.add(enclosingElement.toString());
 	}
 
 	/**
