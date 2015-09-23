@@ -77,11 +77,19 @@ public class ProIOCProcessor extends AbstractProcessor {
 			BindClass bindingClass = entry.getValue();
 
 			try {
-				JavaFileObject jfo = this.filer.createSourceFile(bindingClass.getFqcn(), new Element[] { typeElement });
+				JavaFileObject jfo = this.filer.createSourceFile(bindingClass.getViewBinderClassName(), new Element[] { typeElement });
 		        Writer writer = jfo.openWriter();
 		        writer.write(bindingClass.toJava());
 		        writer.flush();
 		        writer.close();
+		        if(bindingClass.isBindData()){
+		        	JavaFileObject djfo = this.filer.createSourceFile(bindingClass.getViewDataBinderCN(), new Element[]{typeElement});
+		        	Writer dw = djfo.openWriter();
+		        	dw.write(bindingClass.toDataBinderJava());
+		        	dw.flush();
+		        	dw.close();
+		        	writeLog(bindingClass.toDataBinderJava());
+		        }
 					writeLog(bindingClass.toJava());
 			} catch (IOException e) {
 				error(typeElement, "Unable to write view binder for type %s: %s", typeElement, e.getMessage());
@@ -256,8 +264,23 @@ public class ProIOCProcessor extends AbstractProcessor {
 	private void parseBindData(Element element, LinkedHashMap<TypeElement, BindClass> targets,
 			LinkedHashSet<String> erasedTargetNames){
 		TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
-		//获取所在的适配器的名称(含包名)
-		String adapterName = getClassNameInClass(enclosingElement);
+		if (!isSubtypeOfType(element.asType(), VIEW_TYPE) ) {
+			error(element, "@%s 属性必须是View的子类 (%s.%s)", BindById.class.getSimpleName(),
+					enclosingElement.getQualifiedName(), element.getSimpleName());
+			return ;
+		}
+		//获取要绑定的数据名称
+		String dataName = element.getAnnotation(BindData.class).value();
+		//获取被注解的属性
+		String filedName = element.getSimpleName().toString();
+		BindClass bindingClass = targets.get(enclosingElement);
+	    if(bindingClass != null){
+	    	bindingClass.addDataBind(filedName, dataName);
+	    }else{
+	    	//创建一个被注解的类
+	    	bindingClass = getOrCreateTargetClass(targets, enclosingElement);
+	    }
+		
 	}
 
 	
