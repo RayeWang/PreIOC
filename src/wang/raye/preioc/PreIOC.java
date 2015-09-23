@@ -4,9 +4,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.util.Log;
+import android.view.View;
 import wang.raye.preioc.find.AbstractFind;
 import wang.raye.preioc.find.ActivityFind;
+import wang.raye.preioc.find.DialogFind;
+import wang.raye.preioc.find.ViewFind;
 /**
  * 进行依赖注入的类
  * 与普通注解框架不同的是此注解是调用预编译好的代码实现注入，
@@ -31,6 +35,14 @@ public class PreIOC {
 
 	public static void binder(Activity activity) {
 		binder(activity,activity,new ActivityFind());
+	}
+	
+	public static void binder(View view){
+		binder(view, view, new ViewFind());
+	}
+	
+	public static void binder(Dialog dialog){
+		binder(dialog,dialog,new DialogFind());
 	}
 
 	private static void binder(Object target, Object source, AbstractFind finder) {
