@@ -44,6 +44,33 @@ public class PreIOC {
 	public static void binder(Dialog dialog){
 		binder(dialog,dialog,new DialogFind());
 	}
+	
+	/**
+	 * 绑定指定的类的对象的属性
+	 * @param target 被绑定的属性的所在类的对象
+	 * @param activity 控件所在的Activity
+	 */
+	public static void binder(Object target,Activity activity){
+		binder(target,activity,new ActivityFind());
+	}
+	
+	/**
+	 * 绑定指定类对象的属性
+	 * @param target 被绑定的属性的所在类的对象
+	 * @param dialog 控件所在Dialog
+	 */
+	public static void binder(Object target,Dialog dialog){
+		binder(target,dialog,new DialogFind());
+	}
+	
+	/**
+	 * 绑定指定类对象的属性
+	 * @param target 被绑定的属性的所在类的对象
+	 * @param dialog 控件所在View
+	 */
+	public static void binder(Object target,View view){
+		binder(target,view,new ViewFind());
+	}
 
 	private static void binder(Object target, Object source, AbstractFind finder) {
 		Class<?> targetClass = target.getClass();

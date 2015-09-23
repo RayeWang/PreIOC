@@ -2,7 +2,6 @@ package wang.raye.preioc.internal;
 
 import static javax.lang.model.element.ElementKind.CLASS;
 import static javax.lang.model.element.ElementKind.INTERFACE;
-import static javax.lang.model.element.ElementKind.METHOD;
 import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.lang.model.element.Modifier.STATIC;
 import static javax.tools.Diagnostic.Kind.ERROR;
@@ -35,6 +34,7 @@ import javax.lang.model.util.Elements;
 import javax.tools.JavaFileObject;
 
 import wang.raye.preioc.annotation.BindById;
+import wang.raye.preioc.annotation.BindData;
 import wang.raye.preioc.annotation.OnClick;
 
 /**
@@ -106,6 +106,14 @@ public class ProIOCProcessor extends AbstractProcessor {
 				parseBindById(element, targets, erasedTargetNames);
 			} catch (Exception e) {
 				error(element, BindById.class.getName() + "parse error:%s", e);
+			}
+		}
+		
+		for(Element element : env.getElementsAnnotatedWith(BindData.class)){
+			try{
+				parseBindData(element, targets, erasedTargetNames);
+			}catch (Exception e) {
+				error(element, BindData.class.getName() + "parse error:%s", e);
 			}
 		}
 		
@@ -244,7 +252,25 @@ public class ProIOCProcessor extends AbstractProcessor {
 	    bindingClass.addOnClick(ids, methonName);
 	    erasedTargetNames.add(enclosingElement.toString());
 	}
+	
+	private void parseBindData(Element element, LinkedHashMap<TypeElement, BindClass> targets,
+			LinkedHashSet<String> erasedTargetNames){
+		TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
+		//获取所在的适配器的名称(含包名)
+		String adapterName = getClassNameInClass(enclosingElement);
+	}
 
+	
+	/**
+	 * 获取当前的TypeElement所在的类所在的类的名称（类中的类）
+	 * 主要是parseBindData用的
+	 * @param type
+	 * @return (含包名)
+	 */
+	private String getClassNameInClass(TypeElement type){
+		String clzName = type.getQualifiedName().toString();
+		return clzName.substring(0,clzName.lastIndexOf("."));
+	}
 	/**
 	 * 获取类名
 	 * 
