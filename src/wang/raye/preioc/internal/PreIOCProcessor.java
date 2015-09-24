@@ -42,7 +42,7 @@ import wang.raye.preioc.annotation.OnClick;
  * 
  * @author Raye
  */
-public class ProIOCProcessor extends AbstractProcessor {
+public class PreIOCProcessor extends AbstractProcessor {
 	static final String VIEW_TYPE = "android.view.View";
 	private static final String BINDING_CLASS_SUFFIX = "$$ViewBinder";
 	private Elements elementUtils;
