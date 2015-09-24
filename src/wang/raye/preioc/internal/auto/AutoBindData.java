@@ -73,9 +73,15 @@ public class AutoBindData {
 		.append(" adapter,int position) {\n");
 		
 		for(DataBinding binding : dataBinds.values()){
-			builder.append("		t."+binding.getFiled()).append(".setText(");
-			builder.append("adapter.getItem(position).get")
-			.append(toFirstUpperCase(binding.getDataName())).append("());\n");
+			if(!"".equals(binding.getFormat())){
+				builder.append("		t.").append(binding.getField()).append(".setText(");
+				builder.append("adapter.").append(binding.getFormat()).append("(position));\n");
+			}else if( !"".equals(binding.getDataName())){
+				builder.append("		t.").append(binding.getField()).append(".setText(");
+				builder.append("adapter.getItem(position).get")
+				.append(toFirstUpperCase(binding.getDataName())).append("());\n");
+			} 
+			
 		}
 		
 		builder.append("\n}\n");

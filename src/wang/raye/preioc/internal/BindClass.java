@@ -66,8 +66,8 @@ public final class BindClass {
 	 * @param field 需要被绑定的属性名称
 	 * @param dataName 被绑定的数据的名称（通过get+dataName获取数据）
 	 */
-	protected void addDataBind(String field,String dataName,String adapter){
-		dataBinds.put(field, new DataBinding(field, dataName));
+	protected void addDataBind(String field,String dataName,String adapter,String format){
+		dataBinds.put(field, new DataBinding(field, dataName,format));
 		this.adapter = adapter;
 	}
 	/**

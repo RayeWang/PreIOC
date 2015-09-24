@@ -10,15 +10,23 @@ public class DataBinding {
 	private final String field;
 	/** 绑定的数据名称*/
 	private final String dataName;
-	protected DataBinding(String field,String dataName){
+	/** 通过方法获取数据，此方法应在适配器中*/
+	private final String format;
+	protected DataBinding(String field,String dataName,String format){
 		this.field = field;
 		this.dataName = dataName;
+		this.format = format;
 	}
-	public String getFiled() {
+	
+	public String getField() {
 		return field;
 	}
+
 	public String getDataName() {
 		return dataName;
+	}
+	public String getFormat() {
+		return format;
 	}
 	
 	

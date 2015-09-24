@@ -261,6 +261,12 @@ public class PreIOCProcessor extends AbstractProcessor {
 	    erasedTargetNames.add(enclosingElement.toString());
 	}
 	
+	/**
+	 * 记录绑定数据的
+	 * @param element
+	 * @param targets
+	 * @param erasedTargetNames
+	 */
 	private void parseBindData(Element element, LinkedHashMap<TypeElement, BindClass> targets,
 			LinkedHashSet<String> erasedTargetNames){
 		TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
@@ -270,16 +276,19 @@ public class PreIOCProcessor extends AbstractProcessor {
 			return ;
 		}
 		//获取要绑定的数据名称
-		String dataName = element.getAnnotation(BindData.class).value();
+		BindData bindData = element.getAnnotation(BindData.class);
+		String dataName = bindData.value();
+		String format = bindData.format();
 		//获取被注解的属性
 		String filedName = element.getSimpleName().toString();
+	
 		BindClass bindingClass = targets.get(enclosingElement);
 	    if(bindingClass != null){
-	    	bindingClass.addDataBind(filedName, dataName,getClassNameInClass(enclosingElement));
+	    	bindingClass.addDataBind(filedName, dataName,getClassNameInClass(enclosingElement),format);
 	    }else{
 	    	//创建一个被注解的类
 	    	bindingClass = getOrCreateTargetClass(targets, enclosingElement);
-	    	bindingClass.addDataBind(filedName, dataName,getClassNameInClass(enclosingElement));
+	    	bindingClass.addDataBind(filedName, dataName,getClassNameInClass(enclosingElement),format);
 	    }
 	
 	}
