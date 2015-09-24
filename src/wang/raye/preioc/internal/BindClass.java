@@ -7,6 +7,8 @@ import java.util.Map.Entry;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import wang.raye.preioc.internal.auto.AutoBindData;
+import wang.raye.preioc.internal.auto.AutoBindView;
 
 /**
  * 保存类中的注解与相关的属性，方法绑定的值
@@ -100,111 +102,12 @@ public final class BindClass {
 	 * @return
 	 */
 	protected String toJava() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("// PreIOC自动生成的代码，请不要修改\n");
-		// 设置包名
-		builder.append("package ").append(this.classPackage).append(";\n\n");
-		// 有控件需要被绑定，导入View包
-		if ((!this.viewIdMap.isEmpty())) {
-			builder.append("import android.view.View;\n");
-			builder.append("import wang.raye.preioc.find.AbstractFind;\n");
-		}
-		// 需要处理控件绑定，导入接口
-		if (this.parentViewBinder == null) {
-			builder.append("import wang.raye.preioc.ViewBinder;\n\n");
-		}
-		// 创建类名
-		builder.append("public class ").append(this.className);
-		// 创建被注解处理的类的类型
-		builder.append("<T extends ").append(this.targetClass).append(">");
-		if (this.parentViewBinder != null)
-			builder.append(" extends ").append(this.parentViewBinder).append("<T>");
-		else {
-			builder.append(" implements ViewBinder<T>");
-		}
-		builder.append(" {\n");
-
-		autoBindMethod(builder);
-		builder.append('\n');
-		
-
-		builder.append("}\n");
-		return builder.toString();
+		return new AutoBindView(viewIdMap, onClicks, onClickListener, classPackage,
+				className, targetClass, parentViewBinder).toJava();
+				
 	}
 
-	/**
-	 * 自动生成绑定代码
-	 */
-	private void autoBindMethod(StringBuilder builder) {
-		builder.append("  @Override ")
-				.append("public void binder(final AbstractFind finder, final T target, Object source) {\n");
-		if (this.parentViewBinder != null) {
-			builder.append("    super.binder(finder, target, source);\n\n");
-		}
-		if ((!this.viewIdMap.isEmpty())) {
-			// 需要绑定控件
-			for (ViewBindById bindById : viewIdMap.values()) {
-				autoViewBinding(builder, bindById);
-			}
-		}
-		//绑定onClickListener
-		for(Entry<Integer, String> entry : onClicks.entrySet()){
-			bindOnClick(builder,entry.getKey(),null);
-		}
-		builder.append("  }\n");
-	}
 
-	/**
-	 * 自动生成控件获取的代码
-	 * 
-	 * @param builder
-	 *            代码StringBuilder
-	 * @param bindById
-	 *            控件的id与filed绑定的对象
-	 */
-	private void autoViewBinding(StringBuilder builder, ViewBindById bindById) {
-		builder.append("    target.").append(bindById.getField().getName()).append(" = ");
-		builder.append("(").append(bindById.getField().getType()).append(")");
-		builder.append("finder.findRequiredView(source").append(", ").append(bindById.getId()).append(", \"")
-				.append(bindById.getField().getName());
-		builder.append("\");\n");
-		//绑定onClickListener
-		bindOnClick(builder,bindById.getId(),bindById.getField().getName());
-	}
-	
-	/**
-	 * 设置为控件设置监听
-	 * @param builder 代码StringBuilder
-	 * @param id 空间的id
-	 * @param viewName 控件的名称（如果为空说明此控件不需要引用）
-	 */
-	private void bindOnClick(StringBuilder builder,int id,String viewName){
-		//获取监听的方法
-		if(!onClicks.containsKey(id)){
-			//此id不需要设置OnClickListener
-			return;
-		}
-		String methonName = onClicks.get(id);
-		if(!onClickListener.contains(methonName)){
-			
-			//监听不存在，创建监听
-			builder.append("	View.OnClickListener ").append(methonName).append(" = new View.OnClickListener() {\n")
-			.append("		public void onClick(View view) {\n			target.").append(methonName)
-			.append("(view);\n").append("			}\n		};\n");
-			//已经建立OnClickListener监听了
-			onClickListener.add(methonName);
-			View view = null;
-		}
-		if(viewName == null){
-			//不需要被引用的
-			builder.append("	((View)finder.findRequiredView(source").append(", ").append(id).append(", \"")
-				.append("\")).setOnClickListener(").append(methonName).append(");\n");
-		}else{
-			builder.append("    target.").append(viewName).append(".setOnClickListener(").append(methonName).append(");\n");
-			//避免后面的重新设置
-			onClicks.remove(id);
-		}
-	}
 
 	/**
 	 * 获取绑定控件的class名称
@@ -230,56 +133,7 @@ public final class BindClass {
 	}
 	
 	protected String toDataBinderJava(){
-		StringBuilder builder = new StringBuilder();
-		builder.append("// PreIOC自动生成的代码，请不要修改\n");
-		// 设置包名
-		builder.append("package ").append(this.classPackage).append(";\n\n");
-		builder.append("import android.widget.BaseAdapter;\n");
-		builder.append("import wang.raye.preioc.ViewDataBinder;\n\n");
-		// 创建类名
-		builder.append("public class ").append(className.substring(0,className.lastIndexOf("$$")))
-		.append("$$ViewDataBinder")
-		// 创建被注解处理的类的类型,前面是ViewHolder
-		.append("<T extends ").append(this.targetClass).append(",A extends ")
-		//适配器
-		.append(targetClass.substring(0, targetClass.lastIndexOf(".")))
-		
-		.append(">")
-		.append(" implements ViewDataBinder<T,A>{\n");
-		builder.append("\n");
-		
-		builder.append('\n');
-		
-		autoBindDataMethod(builder);
-		builder.append("}\n");
-		return builder.toString();
+		return new AutoBindData(dataBinds, className, classPackage, targetClass).toJava();
 	}
 	
-	/**
-	 * 自动生成绑定数据的方法
-	 * @param builder
-	 */
-	private void autoBindDataMethod(StringBuilder builder){
-		builder.append("  @Override ")
-		.append("	public void bindData(final T t,final A")
-		.append(" adapter,int position) {\n");
-		
-		for(DataBinding binding : dataBinds.values()){
-			builder.append("		t."+binding.getFiled()).append(".setText(");
-			builder.append("adapter.getItem(position).get")
-			.append(toFirstUpperCase(binding.getDataName())).append("());\n");
-		}
-		
-		builder.append("\n}\n");
-	}
-	
-	private String toFirstUpperCase(String str){
-//		name = name.substring(0, 1).toUpperCase() + name.substring(1);
-//		return  name;
-		char[] cs=str.toCharArray();
-		if(cs[0] >= 97){
-			cs[0]-=32;
-		}
-		return String.valueOf(cs);
-	}
 }
