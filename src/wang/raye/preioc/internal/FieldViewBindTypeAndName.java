@@ -35,6 +35,6 @@ public class FieldViewBindTypeAndName {
 	}
 
 	public boolean requiresCast() {
-		return !ProIOCProcessor.VIEW_TYPE.equals(type.toString());
+		return !PreIOCProcessor.VIEW_TYPE.equals(type.toString());
 	}
 }

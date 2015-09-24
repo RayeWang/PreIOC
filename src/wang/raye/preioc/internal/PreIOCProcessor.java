@@ -116,7 +116,7 @@ public class PreIOCProcessor extends AbstractProcessor {
 				error(element, BindById.class.getName() + "parse error:%s", e);
 			}
 		}
-		
+		//绑定数据
 		for(Element element : env.getElementsAnnotatedWith(BindData.class)){
 			try{
 				parseBindData(element, targets, erasedTargetNames);
@@ -275,12 +275,13 @@ public class PreIOCProcessor extends AbstractProcessor {
 		String filedName = element.getSimpleName().toString();
 		BindClass bindingClass = targets.get(enclosingElement);
 	    if(bindingClass != null){
-	    	bindingClass.addDataBind(filedName, dataName);
+	    	bindingClass.addDataBind(filedName, dataName,getClassNameInClass(enclosingElement));
 	    }else{
 	    	//创建一个被注解的类
 	    	bindingClass = getOrCreateTargetClass(targets, enclosingElement);
+	    	bindingClass.addDataBind(filedName, dataName,getClassNameInClass(enclosingElement));
 	    }
-		
+	
 	}
 
 	

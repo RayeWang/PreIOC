@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import android.view.View;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
 
 /**
  * 保存类中的注解与相关的属性，方法绑定的值
@@ -20,6 +21,9 @@ public final class BindClass {
 	private final LinkedHashMap<Integer,String> onClicks = new LinkedHashMap<>();
 	/** 已经创建过的监听，对应onClicks的value,防止每个OnClickLisenter建立一个监听*/
 	private ArrayList<String> onClickListener = new ArrayList<>();
+	
+	/** 适配器类名*/
+	private String adapter;
 	
 	/** 记录需要绑定数据的属性及其参数key 属性名，value 参数*/
 	private final LinkedHashMap<String, DataBinding> dataBinds = new LinkedHashMap<>();
@@ -60,10 +64,10 @@ public final class BindClass {
 	 * @param field 需要被绑定的属性名称
 	 * @param dataName 被绑定的数据的名称（通过get+dataName获取数据）
 	 */
-	protected void addDataBind(String field,String dataName){
+	protected void addDataBind(String field,String dataName,String adapter){
 		dataBinds.put(field, new DataBinding(field, dataName));
+		this.adapter = adapter;
 	}
-	
 	/**
 	 * 是否需要绑定数据
 	 * @return
@@ -97,7 +101,7 @@ public final class BindClass {
 	 */
 	protected String toJava() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("// ProIOC自动生成的代码，请不要修改\n");
+		builder.append("// PreIOC自动生成的代码，请不要修改\n");
 		// 设置包名
 		builder.append("package ").append(this.classPackage).append(";\n\n");
 		// 有控件需要被绑定，导入View包
@@ -210,25 +214,38 @@ public final class BindClass {
 		return new StringBuilder().append(this.classPackage).append(".").append(this.className).toString();
 	}
 	
+	
+	
+	
+	/////////////////////////////绑定数据的自动生成代码部分
 	/**
 	 * 获取绑定控件数据的名称
 	 * @return
 	 */
 	protected String getViewDataBinderCN(){
-		return new StringBuilder().append(targetClass).append("$$ViewDataBinder").toString();
+		return new StringBuilder().append(this.classPackage).append(".").
+				append(this.className.substring(0,className.lastIndexOf("$")+1)).
+				append("ViewDataBinder").toString();
+
 	}
 	
-	
-	/////////////////////////////绑定数据的自动生成代码部分
 	protected String toDataBinderJava(){
 		StringBuilder builder = new StringBuilder();
-		builder.append("// ProIOC自动生成的代码，请不要修改\n");
+		builder.append("// PreIOC自动生成的代码，请不要修改\n");
 		// 设置包名
 		builder.append("package ").append(this.classPackage).append(";\n\n");
+		builder.append("import android.widget.BaseAdapter;\n");
 		builder.append("import wang.raye.preioc.ViewDataBinder;\n\n");
 		// 创建类名
-		builder.append("public class ").append(targetClass.substring(0,targetClass.lastIndexOf(".")))
-		.append("$$ViewDataBinder").append(" implements ViewDataBinder<T>{\n");
+		builder.append("public class ").append(className.substring(0,className.lastIndexOf("$$")))
+		.append("$$ViewDataBinder")
+		// 创建被注解处理的类的类型,前面是ViewHolder
+		.append("<T extends ").append(this.targetClass).append(",A extends ")
+		//适配器
+		.append(targetClass.substring(0, targetClass.lastIndexOf(".")))
+		
+		.append(">")
+		.append(" implements ViewDataBinder<T,A>{\n");
 		builder.append("\n");
 		
 		builder.append('\n');
@@ -239,14 +256,30 @@ public final class BindClass {
 	}
 	
 	/**
-	 * 自动生成
+	 * 自动生成绑定数据的方法
 	 * @param builder
 	 */
 	private void autoBindDataMethod(StringBuilder builder){
 		builder.append("  @Override ")
-		.append("public void bindData(final T t,final BaseAdapter adapter) {\n");
-		// TODO 明天这里继续
+		.append("	public void bindData(final T t,final A")
+		.append(" adapter,int position) {\n");
+		
+		for(DataBinding binding : dataBinds.values()){
+			builder.append("		t."+binding.getFiled()).append(".setText(");
+			builder.append("adapter.getItem(position).get")
+			.append(toFirstUpperCase(binding.getDataName())).append("());\n");
+		}
 		
 		builder.append("\n}\n");
+	}
+	
+	private String toFirstUpperCase(String str){
+//		name = name.substring(0, 1).toUpperCase() + name.substring(1);
+//		return  name;
+		char[] cs=str.toCharArray();
+		if(cs[0] >= 97){
+			cs[0]-=32;
+		}
+		return String.valueOf(cs);
 	}
 }

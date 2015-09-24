@@ -7,7 +7,13 @@ import android.widget.BaseAdapter;
  * @author Raye
  *
  */
-public interface ViewDataBinder<T> {
+public interface ViewDataBinder<T,A extends BaseAdapter> {
 
-	public void bindData(final T t,final BaseAdapter adapter);
+	/**
+	 * 绑定数据的方法
+	 * @param t ViewHolder的对象
+	 * @param adapter 适配器
+	 * @param position 当前数据行
+	 */
+	public void bindData(final T t,final A adapter,int position);
 }
