@@ -35,6 +35,7 @@ import javax.tools.JavaFileObject;
 
 import wang.raye.preioc.annotation.BindById;
 import wang.raye.preioc.annotation.BindData;
+import wang.raye.preioc.annotation.OnCheckedChanged;
 import wang.raye.preioc.annotation.OnClick;
 import wang.raye.preioc.annotation.OnTouch;
 
@@ -65,6 +66,8 @@ public class PreIOCProcessor extends AbstractProcessor {
 		Set<String> types = new LinkedHashSet<>();
 		types.add(BindById.class.getCanonicalName());
 		types.add(OnClick.class.getCanonicalName());
+		types.add(OnTouch.class.getCanonicalName());
+		types.add(OnCheckedChanged.class.getCanonicalName());
 		return types;
 	}
 
@@ -141,6 +144,15 @@ public class PreIOCProcessor extends AbstractProcessor {
 				error(element, OnTouch.class.getName() + "parse error:%s", e);
 			}
 		}
+		for(Element element : env.getElementsAnnotatedWith(OnCheckedChanged.class)){
+			//绑定OnCheckedChangeListener事件的
+			try{
+				parseLisenter(element, targets, erasedTargetNames,OnCheckedChanged.class);
+			}catch(Exception e){
+				error(element, OnCheckedChanged.class.getName() + "parse error:%s", e);
+			}
+		}
+		
 		return targets;
 	}
 
@@ -262,9 +274,11 @@ public class PreIOCProcessor extends AbstractProcessor {
 	    	bindingClass = getOrCreateTargetClass(targets, enclosingElement);
 	    }
 	    if(annotationClass == OnClick.class){
-	    	bindingClass.addOnClick(ids, methonName);
+	    	bindingClass.getAutoBindView().addOnClick(ids, methonName);
 	    }else if(annotationClass == OnTouch.class){
-	    	bindingClass.addOnTouch(ids, methonName);
+	    	bindingClass.getAutoBindView().addOnTouch(ids, methonName);
+	    }else if(annotationClass == OnCheckedChanged.class){
+	    	bindingClass.getAutoBindView().addOnCheckedChanged(ids, methonName);
 	    }
 	    
 	    erasedTargetNames.add(enclosingElement.toString());

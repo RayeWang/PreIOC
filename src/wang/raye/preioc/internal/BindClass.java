@@ -40,27 +40,16 @@ public final class BindClass {
 		this.autoBindView = new AutoBindView(classPackage, className, targetClass);
 	}
 
+	public AutoBindView getAutoBindView() {
+		return autoBindView;
+	}
+
 	protected void addField(int id, FieldViewBindTypeAndName binding) {
 		getOrCreateViewBindings(id).setField(binding);
 
 	}
-	/**
-	 * 添加一个OnClick事件的方法
-	 * @param id 使用此方法的控件id集合
-	 * @param name 
-	 */
-	protected void addOnClick(int[] ids,String methonName) {
-		autoBindView.addOnClick(ids, methonName);
-	}
-	
-	/**
-	 * 添加一个OnTouch事件的方法
-	 * @param ids 使用此方法的控件id集合
-	 * @param methonName 执行的方法名
-	 */
-	protected void addOnTouch(int[] ids,String methonName) {
-		autoBindView.addOnTouch(ids, methonName);
-	}
+
+
 	
 	/**
 	 * 添加一行需要绑定数据的记录

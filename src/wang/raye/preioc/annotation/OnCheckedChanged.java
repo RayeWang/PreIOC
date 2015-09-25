@@ -6,13 +6,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 点击事件的注解
- * 方法签名 void onClick(View view)
+ * CompoundButton的OnCheckedChangeListener
+ * 方法签名void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
  * @author Raye
  *
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.METHOD)
-public @interface OnClick {
+public @interface OnCheckedChanged {
+
 	int[] value();
 }
