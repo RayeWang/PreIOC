@@ -36,6 +36,7 @@ import javax.tools.JavaFileObject;
 import wang.raye.preioc.annotation.BindById;
 import wang.raye.preioc.annotation.BindData;
 import wang.raye.preioc.annotation.OnClick;
+import wang.raye.preioc.annotation.OnTouch;
 
 /**
  * 注解预处理的类
@@ -69,7 +70,6 @@ public class PreIOCProcessor extends AbstractProcessor {
 
 	@Override
 	public boolean process(Set<? extends TypeElement> elements, RoundEnvironment env) {
-		writeLog("this is ProIOC process ");
 		// 被注解的类和类中属性相关的注解键值对
 		LinkedHashMap<TypeElement, BindClass> targetClassMap = parseTargets(env);
 		for (Map.Entry<TypeElement, BindClass> entry : targetClassMap.entrySet()) {
@@ -88,9 +88,9 @@ public class PreIOCProcessor extends AbstractProcessor {
 		        	dw.write(bindingClass.toDataBinderJava());
 		        	dw.flush();
 		        	dw.close();
-		        	writeLog(bindingClass.toDataBinderJava());
+//		        	writeLog(bindingClass.toDataBinderJava());
 		        }
-					writeLog(bindingClass.toJava());
+//					writeLog(bindingClass.toJava());
 			} catch (IOException e) {
 				error(typeElement, "Unable to write view binder for type %s: %s", typeElement, e.getMessage());
 			}
@@ -131,6 +131,14 @@ public class PreIOCProcessor extends AbstractProcessor {
 				parseLisenter(element, targets, erasedTargetNames,OnClick.class);
 			}catch(Exception e){
 				error(element, OnClick.class.getName() + "parse error:%s", e);
+			}
+		}
+		for(Element element : env.getElementsAnnotatedWith(OnTouch.class)){
+			//绑定Touch事件的
+			try{
+				parseLisenter(element, targets, erasedTargetNames,OnTouch.class);
+			}catch(Exception e){
+				error(element, OnTouch.class.getName() + "parse error:%s", e);
 			}
 		}
 		return targets;
@@ -195,16 +203,16 @@ public class PreIOCProcessor extends AbstractProcessor {
 		}
 		//获取被注解的属性名称
 		String name = element.getSimpleName().toString();
-		writeLog("this elementType kind is:%s", elementType.toString());
+//		writeLog("this elementType kind is:%s", elementType.toString());
 
 		//获取被注解的属性的类型
 		String typeName = elementType.toString();
 		FieldViewBindTypeAndName binding = new FieldViewBindTypeAndName(name, typeName);
 		bindingClass.addField(id, binding);
-		writeLog(
-				"parseBindOne erasedTargetNames.add(%s)  ,new FieldViewBindTyp"
-						+ "eAndName(%s, %s)   bindingClass.addField(%s,binding)",
-				enclosingElement.toString(), name, elementType.getKind().name(), id);
+//		writeLog(
+//				"parseBindOne erasedTargetNames.add(%s)  ,new FieldViewBindTyp"
+//						+ "eAndName(%s, %s)   bindingClass.addField(%s,binding)",
+//				enclosingElement.toString(), name, elementType.getKind().name(), id);
 
 		erasedTargetNames.add(enclosingElement.toString());
 	}
@@ -219,7 +227,6 @@ public class PreIOCProcessor extends AbstractProcessor {
 	 * @return
 	 */
 	private BindClass getOrCreateTargetClass(Map<TypeElement, BindClass> targetClassMap, TypeElement enclosingElement) {
-		writeLog("getOrCreateTargetClass TypeElement:%s", enclosingElement.getQualifiedName().toString());
 		BindClass bindingClass = targetClassMap.get(enclosingElement);
 		if (bindingClass == null) {
 			String targetType = enclosingElement.getQualifiedName().toString();
@@ -251,13 +258,15 @@ public class PreIOCProcessor extends AbstractProcessor {
 	    String methonName = executableElement.getSimpleName().toString();
 	    
 	    BindClass bindingClass = targets.get(enclosingElement);
-	    if(bindingClass != null){
-	    	bindingClass.addOnClick(ids, methonName);
-	    }else{
-	    	//创建一个被注解的类
+	    if(bindingClass == null){
 	    	bindingClass = getOrCreateTargetClass(targets, enclosingElement);
 	    }
-	    bindingClass.addOnClick(ids, methonName);
+	    if(annotationClass == OnClick.class){
+	    	bindingClass.addOnClick(ids, methonName);
+	    }else if(annotationClass == OnTouch.class){
+	    	bindingClass.addOnTouch(ids, methonName);
+	    }
+	    
 	    erasedTargetNames.add(enclosingElement.toString());
 	}
 	
@@ -441,7 +450,7 @@ public class PreIOCProcessor extends AbstractProcessor {
 	 * 
 	 * @param str
 	 */
-	private void writeLog(String message, Object... args) {
+	public static void writeLog(String message, Object... args) {
 		try {
 			FileWriter fw = new FileWriter(new File("D:/PreIOCLog.txt"), true);
 			fw.write(String.format(message, args) + "\n");

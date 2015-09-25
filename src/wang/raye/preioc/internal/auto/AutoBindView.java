@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
-import android.view.View;
-import wang.raye.preioc.internal.DataBinding;
+import wang.raye.preioc.internal.PreIOCProcessor;
 import wang.raye.preioc.internal.ViewBindById;
 
 /**
@@ -15,12 +14,15 @@ import wang.raye.preioc.internal.ViewBindById;
  */
 public class AutoBindView {
 	/** 控件与ID绑定的集合 */
-	private final LinkedHashMap<Integer, ViewBindById> viewIdMap ;
+	private final LinkedHashMap<Integer, ViewBindById> viewIdMap = new LinkedHashMap<>();
 	/** 保存OnClick事件的id与方法名*/
-	private final LinkedHashMap<Integer,String> onClicks ;
+	private final LinkedHashMap<Integer,String> onClicks = new LinkedHashMap<>();
 	/** 已经创建过的监听，对应onClicks的value,防止每个OnClickLisenter建立一个监听*/
-	private ArrayList<String> onClickListener = new ArrayList<>();
-
+	private final ArrayList<String> onClickListener = new ArrayList<>();
+	/** 已经建立的OnTouchListener*/
+	private final ArrayList<String> onTouchListener = new ArrayList<>();
+	/** 触摸事件的集合*/
+	private final LinkedHashMap<Integer, String> onTouchs = new LinkedHashMap<>();
 	/** 包名 */
 	private final String classPackage;
 	/** 注解处理的类名，通过反射实例化这个类来 处理 */
@@ -31,18 +33,57 @@ public class AutoBindView {
 	private String parentViewBinder;
 	
 
-	public AutoBindView(LinkedHashMap<Integer, ViewBindById> viewIdMap, LinkedHashMap<Integer, String> onClicks,
-			ArrayList<String> onClickListener, String classPackage, String className, String targetClass,
-			String parentViewBinder) {
+
+
+	public AutoBindView(String classPackage, String className, String targetClass) {
 		super();
-		this.viewIdMap = viewIdMap;
-		this.onClicks = onClicks;
-		this.onClickListener = onClickListener;
 		this.classPackage = classPackage;
 		this.className = className;
 		this.targetClass = targetClass;
-		this.parentViewBinder = parentViewBinder;
 	}
+
+	
+	/**
+	 * 添加一个View的ID与属性绑定的对象
+	 * @param id
+	 * @return
+	 */
+	public ViewBindById getOrCreateViewBindings(int id) {
+		ViewBindById viewId = viewIdMap.get(id);
+		if (viewId == null) {
+			viewId = new ViewBindById(id);
+			viewIdMap.put(id, viewId);
+		}
+		return viewId;
+	}
+
+	/**
+	 * 添加一个OnClick事件的方法
+	 * @param id 使用此方法的控件id集合
+	 * @param name 
+	 */
+	public void addOnClick(int[] ids,String methonName) {
+		if(ids != null){
+			for(int id : ids){
+			
+				onClicks.put(id, methonName);
+			}
+		}
+	}
+	
+	/**
+	 * 添加一个OnTouch事件的方法
+	 * @param ids 使用此方法的控件id集合
+	 * @param methonName 执行的方法名
+	 */
+	public void addOnTouch(int[] ids,String methonName) {
+		if(ids != null){
+			for(int id : ids){
+				onTouchs.put(id, methonName);
+			}
+		}
+	}
+	
 
 	/**
 	 * 自动生成Java代码
@@ -58,6 +99,9 @@ public class AutoBindView {
 		if ((!viewIdMap.isEmpty())) {
 			builder.append("import android.view.View;\n");
 			builder.append("import wang.raye.preioc.find.AbstractFind;\n");
+		}
+		if(onTouchs.size() > 0){
+			builder.append("import android.view.MotionEvent;\n");
 		}
 		// 需要处理控件绑定，导入接口
 		if (parentViewBinder == null) {
@@ -101,6 +145,10 @@ public class AutoBindView {
 		for(Entry<Integer, String> entry : onClicks.entrySet()){
 			bindOnClick(builder,entry.getKey(),null);
 		}
+		//绑定OnTouchListener
+		for(Entry<Integer, String> entry : onTouchs.entrySet()){
+			bindOnTouch(builder, entry.getKey(), null);
+		}
 		builder.append("  }\n");
 	}
 
@@ -120,6 +168,7 @@ public class AutoBindView {
 		builder.append("\");\n");
 		//绑定onClickListener
 		bindOnClick(builder,bindById.getId(),bindById.getField().getName());
+		bindOnTouch(builder,bindById.getId(),bindById.getField().getName());
 	}
 	
 	/**
@@ -143,7 +192,6 @@ public class AutoBindView {
 			.append("(view);\n").append("			}\n		};\n");
 			//已经建立OnClickListener监听了
 			onClickListener.add(methonName);
-			View view = null;
 		}
 		if(viewName == null){
 			//不需要被引用的
@@ -153,6 +201,40 @@ public class AutoBindView {
 			builder.append("    target.").append(viewName).append(".setOnClickListener(").append(methonName).append(");\n");
 			//避免后面的重新设置
 			onClicks.remove(id);
+		}
+	}
+	
+	/**
+	 * 设置为控件设置OnTouch监听
+	 * @param builder 代码StringBuilder
+	 * @param id 空间的id
+	 * @param viewName 控件的名称（如果为空说明此控件不需要引用）
+	 */
+	private void bindOnTouch(StringBuilder builder,int id,String viewName){
+		//获取监听的方法
+		if(!onTouchs.containsKey(id)){
+			//此id不需要设置OnTouchListener
+			return;
+		}
+		String methonName = onTouchs.get(id);
+		if(!onTouchListener.contains(methonName)){
+			
+			//监听不存在，创建监听
+			builder.append("	View.OnTouchListener ").append(methonName).append(" = new View.OnTouchListener() {\n")
+			.append("		public boolean onTouch(View view, MotionEvent event) {\n			return target.")
+			.append(methonName)
+			.append("(view,event);\n").append("			}\n		};\n");
+			//已经建立OnClickListener监听了
+			onTouchListener.add(methonName);
+		}
+		if(viewName == null){
+			//不需要被引用的
+			builder.append("	((View)finder.findRequiredView(source").append(", ").append(id).append(", \"")
+				.append("\")).setOnTouchListener(").append(methonName).append(");\n");
+		}else{
+			builder.append("    target.").append(viewName).append(".setOnTouchListener(").append(methonName).append(");\n");
+			//避免后面的重新设置
+			onTouchs.remove(id);
 		}
 	}
 }

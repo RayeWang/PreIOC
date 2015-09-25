@@ -8,7 +8,7 @@ public final class ViewBindById {
 	 private final int id;
 	 private FieldViewBindTypeAndName field;
 	 
-	 protected ViewBindById(int id) {
+	 public ViewBindById(int id) {
 		 this.id = id;
 	 }
 	 

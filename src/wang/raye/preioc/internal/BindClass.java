@@ -1,12 +1,7 @@
 package wang.raye.preioc.internal;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.Map.Entry;
 
-import android.view.View;
-import android.widget.BaseAdapter;
-import android.widget.TextView;
 import wang.raye.preioc.internal.auto.AutoBindData;
 import wang.raye.preioc.internal.auto.AutoBindView;
 
@@ -19,10 +14,10 @@ import wang.raye.preioc.internal.auto.AutoBindView;
 public final class BindClass {
 	/** 控件与ID绑定的集合 */
 	private final LinkedHashMap<Integer, ViewBindById> viewIdMap = new LinkedHashMap<>();
-	/** 保存OnClick事件的id与方法名*/
-	private final LinkedHashMap<Integer,String> onClicks = new LinkedHashMap<>();
-	/** 已经创建过的监听，对应onClicks的value,防止每个OnClickLisenter建立一个监听*/
-	private ArrayList<String> onClickListener = new ArrayList<>();
+	
+	
+	/** 自动生成代码的对象*/
+	private final AutoBindView autoBindView;
 	
 	/** 适配器类名*/
 	private String adapter;
@@ -42,6 +37,7 @@ public final class BindClass {
 		this.classPackage = classPackage;
 		this.className = className;
 		this.targetClass = targetClass;
+		this.autoBindView = new AutoBindView(classPackage, className, targetClass);
 	}
 
 	protected void addField(int id, FieldViewBindTypeAndName binding) {
@@ -54,11 +50,16 @@ public final class BindClass {
 	 * @param name 
 	 */
 	protected void addOnClick(int[] ids,String methonName) {
-		if(ids != null){
-			for(int id : ids){
-				onClicks.put(id, methonName);
-			}
-		}
+		autoBindView.addOnClick(ids, methonName);
+	}
+	
+	/**
+	 * 添加一个OnTouch事件的方法
+	 * @param ids 使用此方法的控件id集合
+	 * @param methonName 执行的方法名
+	 */
+	protected void addOnTouch(int[] ids,String methonName) {
+		autoBindView.addOnTouch(ids, methonName);
 	}
 	
 	/**
@@ -80,12 +81,7 @@ public final class BindClass {
 	
 	
 	private ViewBindById getOrCreateViewBindings(int id) {
-		ViewBindById viewId = viewIdMap.get(id);
-		if (viewId == null) {
-			viewId = new ViewBindById(id);
-			viewIdMap.put(id, viewId);
-		}
-		return viewId;
+		return autoBindView.getOrCreateViewBindings(id);
 	}
 
 	public void setParentViewBinder(String parentViewBinder) {
@@ -102,8 +98,7 @@ public final class BindClass {
 	 * @return
 	 */
 	protected String toJava() {
-		return new AutoBindView(viewIdMap, onClicks, onClickListener, classPackage,
-				className, targetClass, parentViewBinder).toJava();
+		return autoBindView.toJava();
 				
 	}
 
