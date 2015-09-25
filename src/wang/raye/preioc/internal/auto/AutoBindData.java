@@ -31,13 +31,9 @@ public class AutoBindData {
 	 * @return
 	 */
 	public String toJava(){
-		return new StringBuilder().append(this.classPackage).append(".").
-				append(this.className.substring(0,className.lastIndexOf("$")+1)).
-				append("ViewDataBinder").toString();
-
-	}
-	
-	protected String toDataBinderJava(){
+//		return new StringBuilder().append(this.classPackage).append(".").
+//				append(this.className.substring(0,className.lastIndexOf("$")+1)).
+//				append("ViewDataBinder").toString();
 		StringBuilder builder = new StringBuilder();
 		builder.append("// PreIOC自动生成的代码，请不要修改\n");
 		// 设置包名
@@ -62,6 +58,8 @@ public class AutoBindData {
 		builder.append("}\n");
 		return builder.toString();
 	}
+	
+	
 	
 	/**
 	 * 自动生成绑定数据的方法
