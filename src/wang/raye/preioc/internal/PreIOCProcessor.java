@@ -82,7 +82,7 @@ public class PreIOCProcessor extends AbstractProcessor {
 			BindClass bindingClass = entry.getValue();
 
 			try {
-				JavaFileObject jfo = this.filer.createSourceFile(bindingClass.getViewBinderClassName(), new Element[] { typeElement });
+				JavaFileObject jfo = this.filer.createSourceFile(bindingClass.getViewBinderCN(), new Element[] { typeElement });
 		        Writer writer = jfo.openWriter();
 		        writer.write(bindingClass.toJava());
 		        writer.flush();
@@ -318,11 +318,11 @@ public class PreIOCProcessor extends AbstractProcessor {
 	
 		BindClass bindingClass = targets.get(enclosingElement);
 	    if(bindingClass != null){
-	    	bindingClass.addDataBind(filedName, dataName,getClassNameInClass(enclosingElement),format);
+	    	bindingClass.addDataBind(filedName, dataName,format);
 	    }else{
 	    	//创建一个被注解的类
 	    	bindingClass = getOrCreateTargetClass(targets, enclosingElement);
-	    	bindingClass.addDataBind(filedName, dataName,getClassNameInClass(enclosingElement),format);
+	    	bindingClass.addDataBind(filedName, dataName,format);
 	    }
 	
 	}

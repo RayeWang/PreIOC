@@ -8,7 +8,7 @@ public class AutoBindData {
 
 
 	/** 记录需要绑定数据的属性及其参数key 属性名，value 参数*/
-	private final LinkedHashMap<String, DataBinding> dataBinds;
+	private final LinkedHashMap<String, DataBinding> dataBinds = new LinkedHashMap<>();
 	/** 注解处理的类名，通过反射实例化这个类来 处理 */
 	private final String className;
 	/** 包名 */
@@ -17,17 +17,34 @@ public class AutoBindData {
 	private final String targetClass;
 	
 	
-	public AutoBindData(LinkedHashMap<String, DataBinding> dataBinds, String className, String classPackage,
+	public AutoBindData(String className, String classPackage,
 			String targetClass) {
 		super();
-		this.dataBinds = dataBinds;
 		this.className = className;
 		this.classPackage = classPackage;
 		this.targetClass = targetClass;
 	}
 
+	/** 
+	 * 是否需要绑定数据
+	 * @return
+	 */
+	public boolean isBindData(){
+		return dataBinds.size() > 0;
+	}
+	
 	/**
-	 * 获取绑定控件数据的名称
+	 * 添加一个数据绑定键值对
+	 * @param field 被绑定的属性
+	 * @param dataName 数据名称
+	 * @param format format方法名
+	 */
+	public void addDataBind(String field,String dataName,String format){
+		dataBinds.put(field, new DataBinding(field, dataName,format));
+	}
+	
+	/**
+	 * 自动生成Java绑定代码
 	 * @return
 	 */
 	public String toJava(){

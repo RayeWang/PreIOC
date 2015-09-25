@@ -18,9 +18,9 @@ public final class BindClass {
 	
 	/** 自动生成代码的对象*/
 	private final AutoBindView autoBindView;
+	/** 自动生成绑定数据的代码的对象*/
+	private final AutoBindData autoBindData;
 	
-	/** 适配器类名*/
-	private String adapter;
 	
 	/** 记录需要绑定数据的属性及其参数key 属性名，value 参数*/
 	private final LinkedHashMap<String, DataBinding> dataBinds = new LinkedHashMap<>();
@@ -28,16 +28,15 @@ public final class BindClass {
 	private final String classPackage;
 	/** 注解处理的类名，通过反射实例化这个类来 处理 */
 	private final String className;
-	/** 当前被注解的类的全称 */
-	private final String targetClass;
 	/** ViewBinder的接口实现类 */
 	private String parentViewBinder;
 
 	protected BindClass(String classPackage, String className, String targetClass) {
 		this.classPackage = classPackage;
 		this.className = className;
-		this.targetClass = targetClass;
+//		this.targetClass = targetClass;
 		this.autoBindView = new AutoBindView(classPackage, className, targetClass);
+		this.autoBindData = new AutoBindData(className, classPackage, targetClass);
 	}
 
 	public AutoBindView getAutoBindView() {
@@ -56,16 +55,15 @@ public final class BindClass {
 	 * @param field 需要被绑定的属性名称
 	 * @param dataName 被绑定的数据的名称（通过get+dataName获取数据）
 	 */
-	protected void addDataBind(String field,String dataName,String adapter,String format){
-		dataBinds.put(field, new DataBinding(field, dataName,format));
-		this.adapter = adapter;
+	protected void addDataBind(String field,String dataName,String format){
+		autoBindData.addDataBind(field, dataName, format);
 	}
 	/**
 	 * 是否需要绑定数据
 	 * @return
 	 */
 	protected boolean isBindData(){
-		return dataBinds.size() > 0;
+		return autoBindData.isBindData();
 	}
 	
 	
@@ -73,7 +71,7 @@ public final class BindClass {
 		return autoBindView.getOrCreateViewBindings(id);
 	}
 
-	public void setParentViewBinder(String parentViewBinder) {
+	protected void setParentViewBinder(String parentViewBinder) {
 		this.parentViewBinder = parentViewBinder;
 	}
 
@@ -97,14 +95,13 @@ public final class BindClass {
 	 * 获取绑定控件的class名称
 	 * @return
 	 */
-	protected String getViewBinderClassName() {
+	protected String getViewBinderCN() {
 		return new StringBuilder().append(this.classPackage).append(".").append(this.className).toString();
 	}
 	
 	
 	
 	
-	/////////////////////////////绑定数据的自动生成代码部分
 	/**
 	 * 获取绑定控件数据的名称
 	 * @return
@@ -117,7 +114,7 @@ public final class BindClass {
 	}
 	
 	protected String toDataBinderJava(){
-		return new AutoBindData(dataBinds, className, classPackage, targetClass).toJava();
+		return autoBindData.toJava();
 	}
 	
 }

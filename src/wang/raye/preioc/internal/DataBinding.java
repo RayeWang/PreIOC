@@ -12,7 +12,7 @@ public class DataBinding {
 	private final String dataName;
 	/** 通过方法获取数据，此方法应在适配器中*/
 	private final String format;
-	protected DataBinding(String field,String dataName,String format){
+	public DataBinding(String field,String dataName,String format){
 		this.field = field;
 		this.dataName = dataName;
 		this.format = format;
