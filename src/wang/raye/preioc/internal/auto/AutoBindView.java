@@ -2,9 +2,7 @@ package wang.raye.preioc.internal.auto;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.Map.Entry;
 
-import wang.raye.preioc.internal.PreIOCProcessor;
 import wang.raye.preioc.internal.ViewBindById;
 
 /**
@@ -21,13 +19,18 @@ public class AutoBindView {
 	private final LinkedHashMap<Integer, String> onCheckedChanges = new LinkedHashMap<>();
 	/** 触摸事件的集合*/
 	private final LinkedHashMap<Integer, String> onTouchs = new LinkedHashMap<>();
+	/** OnitemClick事件的id与方法名*/
+	private final LinkedHashMap<Integer, String> onItemClicks = new LinkedHashMap<>();
 	
 	/** 已经创建过的监听，对应onClicks的value,防止每个OnClickLisenter建立一个监听*/
 	private final ArrayList<String> onClickListener = new ArrayList<>();
 	/** 已经建立的OnTouchListener*/
 	private final ArrayList<String> onTouchListener = new ArrayList<>();
+	/** 已经建立的OnItemClickListener*/
+	private final ArrayList<String> onItemClickListener = new ArrayList<>();
 	/** 已经创建了的CheckedChangeListener*/
 	private final ArrayList<String> onCheckedChangedListeners = new ArrayList<>();
+	
 	
 	/** 包名 */
 	private final String classPackage;
@@ -90,6 +93,19 @@ public class AutoBindView {
 	}
 	
 	/**
+	 * 添加一个OnItemClickListener事件的方法
+	 * @param ids
+	 * @param methonName
+	 */
+	public void addOnItemClick(int[] ids,String methonName){
+		if(ids != null){
+			for(int id : ids){
+				onItemClicks.put(id, methonName);
+			}
+		}
+	}
+	
+	/**
 	 * 添加一个OnTouch事件的方法
 	 * @param ids 使用此方法的控件id集合
 	 * @param methonName 执行的方法名
@@ -124,6 +140,11 @@ public class AutoBindView {
 		if(onCheckedChanges.size() > 0){
 			builder.append("import android.widget.CompoundButton;\n");
 		}
+		if(onItemClicks.size() > 0){
+			builder.append("import android.widget.AdapterView;\n");
+		}
+		
+		
 		// 需要处理控件绑定，导入接口
 		if (parentViewBinder == null) {
 			builder.append("import wang.raye.preioc.ViewBinder;\n\n");
@@ -174,6 +195,9 @@ public class AutoBindView {
 		for(int key : onCheckedChanges.keySet()){
 			bindOnCheckedChanged(builder, key, null);
 		}
+		for(int key : onItemClicks.keySet()){
+			bindOnItemClick(builder, key, null);
+		}
 		builder.append("  }\n");
 	}
 
@@ -195,6 +219,7 @@ public class AutoBindView {
 		bindOnClick(builder,bindById.getId(),bindById.getField().getName());
 		bindOnTouch(builder,bindById.getId(),bindById.getField().getName());
 		bindOnCheckedChanged(builder,bindById.getId(),bindById.getField().getName());
+		bindOnItemClick(builder,bindById.getId(),bindById.getField().getName());
 	}
 	
 	/**
@@ -295,6 +320,41 @@ public class AutoBindView {
 			builder.append("    target.").append(viewName).append(".setOnCheckedChangeListener(").append(methonName).append(");\n");
 			//避免后面的重新设置
 			onCheckedChanges.remove(id);
+		}
+	}
+	
+	
+	/**
+	 * 为控件设置OnItemClick监听
+	 * @param builder 代码StringBuilder
+	 * @param id 空间的id
+	 * @param viewName 控件的名称（如果为空说明此控件不需要引用）
+	 */
+	private void bindOnItemClick(StringBuilder builder,int id,String viewName){
+		//获取监听的方法
+		if(!onItemClicks.containsKey(id)){
+			//此id不需要设置OnTouchListener
+			return;
+		}
+		String methonName = onItemClicks.get(id);
+		if(!onItemClickListener.contains(methonName)){
+			
+			//监听不存在，创建监听
+			builder.append("	AdapterView.OnItemClickListener ").append(methonName).append(" = new AdapterView.OnItemClickListener() {\n")
+			.append("		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {\n			target.")
+			.append(methonName)
+			.append("(parent,view,position,id);\n").append("			}\n		};\n");
+			//已经建立OnClickListener监听了
+			onItemClickListener.add(methonName);
+		}
+		if(viewName == null){
+			//不需要被引用的
+			builder.append("	((AdapterView)finder.findRequiredView(source").append(", ").append(id).append(", \"")
+				.append("\")).setOnItemClickListener(").append(methonName).append(");\n");
+		}else{
+			builder.append("    target.").append(viewName).append(".setOnItemClickListener(").append(methonName).append(");\n");
+			//避免后面的重新设置
+			onItemClicks.remove(id);
 		}
 	}
 }

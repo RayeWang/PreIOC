@@ -37,6 +37,7 @@ import wang.raye.preioc.annotation.BindById;
 import wang.raye.preioc.annotation.BindData;
 import wang.raye.preioc.annotation.OnCheckedChanged;
 import wang.raye.preioc.annotation.OnClick;
+import wang.raye.preioc.annotation.OnItemClick;
 import wang.raye.preioc.annotation.OnTouch;
 
 /**
@@ -68,6 +69,7 @@ public class PreIOCProcessor extends AbstractProcessor {
 		types.add(OnClick.class.getCanonicalName());
 		types.add(OnTouch.class.getCanonicalName());
 		types.add(OnCheckedChanged.class.getCanonicalName());
+		types.add(OnItemClick.class.getCanonicalName());
 		return types;
 	}
 
@@ -152,7 +154,14 @@ public class PreIOCProcessor extends AbstractProcessor {
 				error(element, OnCheckedChanged.class.getName() + "parse error:%s", e);
 			}
 		}
-		
+		for(Element element : env.getElementsAnnotatedWith(OnItemClick.class)){
+			//绑定OnItemClick事件的
+			try{
+				parseLisenter(element, targets, erasedTargetNames,OnItemClick.class);
+			}catch(Exception e){
+				error(element, OnItemClick.class.getName() + "parse error:%s", e);
+			}
+		}
 		return targets;
 	}
 
@@ -279,6 +288,8 @@ public class PreIOCProcessor extends AbstractProcessor {
 	    	bindingClass.getAutoBindView().addOnTouch(ids, methonName);
 	    }else if(annotationClass == OnCheckedChanged.class){
 	    	bindingClass.getAutoBindView().addOnCheckedChanged(ids, methonName);
+	    }else if(annotationClass == OnItemClick.class){
+	    	bindingClass.getAutoBindView().addOnItemClick(ids, methonName);
 	    }
 	    
 	    erasedTargetNames.add(enclosingElement.toString());
