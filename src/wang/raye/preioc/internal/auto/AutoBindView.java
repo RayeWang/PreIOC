@@ -2,7 +2,9 @@ package wang.raye.preioc.internal.auto;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 
+import wang.raye.preioc.internal.BindResources;
 import wang.raye.preioc.internal.ViewBindById;
 
 /**
@@ -21,6 +23,9 @@ public class AutoBindView {
 	private final LinkedHashMap<Integer, String> onTouchs = new LinkedHashMap<>();
 	/** OnitemClick事件的id与方法名*/
 	private final LinkedHashMap<Integer, String> onItemClicks = new LinkedHashMap<>();
+	/** 属性与资源绑定的*/
+	private final LinkedHashMap<Integer,BindResources> bindResources = new LinkedHashMap<>();
+	
 	
 	/** 已经创建过的监听，对应onClicks的value,防止每个OnClickLisenter建立一个监听*/
 	private final ArrayList<String> onClickListener = new ArrayList<>();
@@ -30,6 +35,7 @@ public class AutoBindView {
 	private final ArrayList<String> onItemClickListener = new ArrayList<>();
 	/** 已经创建了的CheckedChangeListener*/
 	private final ArrayList<String> onCheckedChangedListeners = new ArrayList<>();
+	
 	
 	
 	/** 包名 */
@@ -92,6 +98,7 @@ public class AutoBindView {
 		}
 	}
 	
+	
 	/**
 	 * 添加一个OnItemClickListener事件的方法
 	 * @param ids
@@ -119,6 +126,10 @@ public class AutoBindView {
 	}
 	
 
+	////////////////////////////////资源
+	public void addBindString(int id,String field){
+		bindResources.put(id, new BindResources(field, BindResources.STRING));
+	}
 	/**
 	 * 自动生成Java代码
 	 * 
@@ -198,6 +209,9 @@ public class AutoBindView {
 		for(int key : onItemClicks.keySet()){
 			bindOnItemClick(builder, key, null);
 		}
+		
+		//绑定资源
+		bindResource(builder);
 		builder.append("  }\n");
 	}
 
@@ -355,6 +369,24 @@ public class AutoBindView {
 			builder.append("    target.").append(viewName).append(".setOnItemClickListener(").append(methonName).append(");\n");
 			//避免后面的重新设置
 			onItemClicks.remove(id);
+		}
+	}
+	
+	
+	private void bindResource(StringBuilder builder){
+		for(Entry<Integer, BindResources> entry : bindResources.entrySet()){
+			int id = entry.getKey();
+			BindResources value = entry.getValue();
+			switch (value.getType()) {
+				case BindResources.STRING:
+
+					builder.append("		target.").append(value.getField())
+					.append(" = finder.getString(").append(id).append(");\n");
+					break;
+	
+				default:
+					break;
+			}
 		}
 	}
 }

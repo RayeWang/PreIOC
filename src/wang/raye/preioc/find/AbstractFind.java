@@ -83,6 +83,10 @@ public abstract class AbstractFind {
 	protected String getResourceEntryName(Object source, int id) {
 		return getContext(source).getResources().getResourceEntryName(id);
 	}
+	
+	protected String getString(Object source,int id){
+		return getContext(source).getResources().getString(id);
+	}
 
 	protected abstract View findView(Object source, int id);
 

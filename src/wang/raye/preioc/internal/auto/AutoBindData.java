@@ -3,7 +3,11 @@ package wang.raye.preioc.internal.auto;
 import java.util.LinkedHashMap;
 
 import wang.raye.preioc.internal.DataBinding;
-
+/**
+ * 自动生成绑定数据到控件代码的类
+ * @author Raye
+ *
+ */
 public class AutoBindData {
 
 
