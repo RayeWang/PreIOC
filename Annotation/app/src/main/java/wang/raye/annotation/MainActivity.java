@@ -2,23 +2,19 @@ package wang.raye.annotation;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import wang.raye.preioc.PreIOC;
+import wang.raye.preioc.annotation.BindArray;
 import wang.raye.preioc.annotation.BindById;
 import wang.raye.preioc.annotation.BindDimen;
 import wang.raye.preioc.annotation.BindString;
-import wang.raye.preioc.annotation.BindStringArray;
 import wang.raye.preioc.annotation.OnCheckedChanged;
 import wang.raye.preioc.annotation.OnClick;
 import wang.raye.preioc.annotation.OnItemClick;
@@ -36,9 +32,11 @@ public class MainActivity extends ActionBarActivity {
     @BindDimen(R.dimen.activity_horizontal_margin)
     int size;
 
-    @BindStringArray(R.array.stringArray)
+    @BindArray(R.array.stringArray)
     String[] strArray;
 
+    @BindArray(R.array.intArray)
+    int[] intArray;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,7 +73,7 @@ public class MainActivity extends ActionBarActivity {
         Toast.makeText(this,"this position is:"+position+"  id:"+id,Toast.LENGTH_SHORT).show();
     }
 
-    @OnClick({R.id.bindDimen,R.id.stringArray})
+    @OnClick({R.id.bindDimen,R.id.stringArray,R.id.intArray})
     public void get(View view){
         switch (view.getId()){
             case R.id.bindDimen:
@@ -83,6 +81,9 @@ public class MainActivity extends ActionBarActivity {
                 break;
             case R.id.stringArray:
                 Toast.makeText(this,strArray[1],Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.intArray:
+                Toast.makeText(this,"int array index 1 is :" + intArray[1],Toast.LENGTH_SHORT).show();
                 break;
         }
     }

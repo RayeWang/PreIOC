@@ -96,6 +96,10 @@ public abstract class AbstractFind {
 	public String[] getStringArray(Object source,int id){
 		return getContext(source).getResources().getStringArray(id);
 	}
+	
+	public int[] getIntArray(Object source,int id){
+		return getContext(source).getResources().getIntArray(id);
+	}
 
 	protected abstract View findView(Object source, int id);
 

@@ -136,6 +136,9 @@ public class AutoBindView {
 	public void addBindStringArray(int id,String field){
 		bindResources.put(id, new BindResources(field, BindResources.STRINGARRAY));
 	}
+	public void addBindIntArray(int id,String field){
+		bindResources.put(id, new BindResources(field, BindResources.INTARRAY));
+	}
 	/**
 	 * 自动生成Java代码
 	 * 
@@ -396,6 +399,10 @@ public class AutoBindView {
 				case BindResources.STRINGARRAY:
 					builder.append("		target.").append(value.getField())
 					.append(" = finder.getStringArray(source,").append(id).append(");\n");
+					break;
+				case BindResources.INTARRAY:
+					builder.append("		target.").append(value.getField())
+					.append(" = finder.getIntArray(source,").append(id).append(");\n");
 					break;
 				default:
 					break;

@@ -9,4 +9,9 @@
         <item>One</item>
         <item>two</item>
     </array>
+
+    <array name="intArray">
+        <item>1</item>
+        <item>2</item>
+    </array>
 </resources>
