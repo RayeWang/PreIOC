@@ -1,5 +1,6 @@
 package wang.raye.preioc.find;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -90,6 +91,10 @@ public abstract class AbstractFind {
 	
 	public int getDimen(Object source,int id){
 		return getContext(source).getResources().getDimensionPixelOffset(id);
+	}
+	
+	public String[] getStringArray(Object source,int id){
+		return getContext(source).getResources().getStringArray(id);
 	}
 
 	protected abstract View findView(Object source, int id);

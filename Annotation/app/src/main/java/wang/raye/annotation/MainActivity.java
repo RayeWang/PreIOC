@@ -11,12 +11,14 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import wang.raye.preioc.PreIOC;
 import wang.raye.preioc.annotation.BindById;
 import wang.raye.preioc.annotation.BindDimen;
 import wang.raye.preioc.annotation.BindString;
+import wang.raye.preioc.annotation.BindStringArray;
 import wang.raye.preioc.annotation.OnCheckedChanged;
 import wang.raye.preioc.annotation.OnClick;
 import wang.raye.preioc.annotation.OnItemClick;
@@ -28,11 +30,14 @@ public class MainActivity extends ActionBarActivity {
     ListView listView;
 
     @BindById(R.id.bindString)
-    Button button;
+    TextView bindString;
     @BindString(R.string.test)
     String name;
     @BindDimen(R.dimen.activity_horizontal_margin)
     int size;
+
+    @BindStringArray(R.array.stringArray)
+    String[] strArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +45,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         PreIOC.binder(this);
         listView.setAdapter(new Adapter(this));
-        button.setText(name);
+        bindString.setText(name);
     }
 
     @OnClick({R.id.click})
@@ -70,8 +75,15 @@ public class MainActivity extends ActionBarActivity {
         Toast.makeText(this,"this position is:"+position+"  id:"+id,Toast.LENGTH_SHORT).show();
     }
 
-    @OnClick({R.id.bindString})
+    @OnClick({R.id.bindDimen,R.id.stringArray})
     public void get(View view){
-        Toast.makeText(this,"size is " + size,Toast.LENGTH_SHORT).show();
+        switch (view.getId()){
+            case R.id.bindDimen:
+                Toast.makeText(this,"size is " + size,Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.stringArray:
+                Toast.makeText(this,strArray[1],Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 }

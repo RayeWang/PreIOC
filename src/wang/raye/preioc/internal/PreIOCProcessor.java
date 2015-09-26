@@ -33,6 +33,7 @@ import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import javax.tools.JavaFileObject;
 
+import wang.raye.preioc.annotation.BindStringArray;
 import wang.raye.preioc.annotation.BindById;
 import wang.raye.preioc.annotation.BindData;
 import wang.raye.preioc.annotation.BindDimen;
@@ -181,6 +182,14 @@ public class PreIOCProcessor extends AbstractProcessor {
 				parseResource(element, targets, erasedTargetNames,BindDimen.class);
 			}catch(Exception e){
 				error(element, BindDimen.class.getName() + "parse error:%s", e);
+			}
+		}
+		for(Element element : env.getElementsAnnotatedWith(BindStringArray.class)){
+			//°ó¶¨Array
+			try{
+				parseResource(element, targets, erasedTargetNames,BindStringArray.class);
+			}catch(Exception e){
+				error(element, BindStringArray.class.getName() + "parse error:%s", e);
 			}
 		}
 		return targets;
@@ -341,6 +350,8 @@ public class PreIOCProcessor extends AbstractProcessor {
 			bindingClass.getAutoBindView().addBindString(id, field);
 		}else if(annotationClass == BindDimen.class){
 			bindingClass.getAutoBindView().addBindDimen(id, field);
+		}else if(annotationClass == BindStringArray.class){
+			bindingClass.getAutoBindView().addBindStringArray(id,field);
 		}
 	
 	    erasedTargetNames.add(enclosingElement.toString());
