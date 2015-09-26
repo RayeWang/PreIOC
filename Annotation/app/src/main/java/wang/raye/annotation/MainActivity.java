@@ -26,10 +26,12 @@ public class MainActivity extends ActionBarActivity {
     @BindById(R.id.listView)
     ListView listView;
 
-    @BindById(R.id.click)
+    @BindById(R.id.bindString)
     Button button;
     @BindString(R.string.test)
     String name;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,5 +66,11 @@ public class MainActivity extends ActionBarActivity {
     @OnItemClick({R.id.listView})
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Toast.makeText(this,"this position is:"+position+"  id:"+id,Toast.LENGTH_SHORT).show();
+    }
+
+    @OnClick({R.id.bindString})
+    public void get(View view){
+        Toast.makeText(this,"getDimensionPixelOffset is "+getResources().getDimensionPixelOffset(R.dimen.activity_horizontal_margin)
+                +"    getDimension "+getResources().getDimension(R.dimen.activity_horizontal_margin),Toast.LENGTH_SHORT).show();
     }
 }

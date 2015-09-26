@@ -381,7 +381,7 @@ public class AutoBindView {
 				case BindResources.STRING:
 
 					builder.append("		target.").append(value.getField())
-					.append(" = finder.getString(").append(id).append(");\n");
+					.append(" = finder.getString(source,").append(id).append(");\n");
 					break;
 	
 				default:

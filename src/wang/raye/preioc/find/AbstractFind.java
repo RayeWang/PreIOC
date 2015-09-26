@@ -84,7 +84,7 @@ public abstract class AbstractFind {
 		return getContext(source).getResources().getResourceEntryName(id);
 	}
 	
-	protected String getString(Object source,int id){
+	public String getString(Object source,int id){
 		return getContext(source).getResources().getString(id);
 	}
 

@@ -311,9 +311,7 @@ public class PreIOCProcessor extends AbstractProcessor {
 	private void parseResource(Element element, LinkedHashMap<TypeElement, BindClass> targets,
 			LinkedHashSet<String> erasedTargetNames,Class annotationClass) throws Exception{
 		
-		//理论上不用判断是否是使用在方法上的
 		//
-		ExecutableElement executableElement = (ExecutableElement) element;
 		// 获取被当前注解Element所在的类的TypeElement（toString等于当前的类名（含包名））
 	    TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
 	    //获取value的值（由于不知制定的类名，所以不能使用方法直接获取）
@@ -321,19 +319,19 @@ public class PreIOCProcessor extends AbstractProcessor {
 	    Method annotationValue = annotationClass.getDeclaredMethod("value");
 	   //理论上是不用判断value是不是int型的
 	    //获取value的值
-	    int id = (int) annotationValue.invoke(annotation);
-	    //被注解的属性名称
-	    String field = element.getSimpleName().toString();
-	    
-	    BindClass bindingClass = targets.get(enclosingElement);
-	    if(bindingClass == null){
-	    	bindingClass = getOrCreateTargetClass(targets, enclosingElement);
-	    }
+		int id = (int) annotationValue.invoke(annotation);
+		//被注解的属性名称
+		String field = element.getSimpleName().toString();
+		
+		BindClass bindingClass = targets.get(enclosingElement);
+		if(bindingClass == null){
+			bindingClass = getOrCreateTargetClass(targets, enclosingElement);
+		}
+
+		if(annotationClass == BindString.class){
+			bindingClass.getAutoBindView().addBindString(id, field);
+		}
 	
-	    if(annotationClass == BindString.class){
-	    	bindingClass.getAutoBindView().addBindString(id, field);
-	    }
-	    
 	    erasedTargetNames.add(enclosingElement.toString());
 	}
 	
