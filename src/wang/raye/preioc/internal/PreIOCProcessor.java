@@ -35,6 +35,7 @@ import javax.tools.JavaFileObject;
 
 import wang.raye.preioc.annotation.BindById;
 import wang.raye.preioc.annotation.BindData;
+import wang.raye.preioc.annotation.BindDimen;
 import wang.raye.preioc.annotation.BindString;
 import wang.raye.preioc.annotation.OnCheckedChanged;
 import wang.raye.preioc.annotation.OnClick;
@@ -68,6 +69,7 @@ public class PreIOCProcessor extends AbstractProcessor {
 		Set<String> types = new LinkedHashSet<>();
 		types.add(BindById.class.getCanonicalName());
 		types.add(BindString.class.getCanonicalName());
+		types.add(BindDimen.class.getCanonicalName());
 		types.add(OnClick.class.getCanonicalName());
 		types.add(OnTouch.class.getCanonicalName());
 		types.add(OnCheckedChanged.class.getCanonicalName());
@@ -166,14 +168,21 @@ public class PreIOCProcessor extends AbstractProcessor {
 		}
 		
 		for(Element element : env.getElementsAnnotatedWith(BindString.class)){
-			//绑定OnItemClick事件的
+			//绑定String
 			try{
 				parseResource(element, targets, erasedTargetNames,BindString.class);
 			}catch(Exception e){
 				error(element, BindString.class.getName() + "parse error:%s", e);
 			}
 		}
-		
+		for(Element element : env.getElementsAnnotatedWith(BindDimen.class)){
+			//绑定Dimension
+			try{
+				parseResource(element, targets, erasedTargetNames,BindDimen.class);
+			}catch(Exception e){
+				error(element, BindDimen.class.getName() + "parse error:%s", e);
+			}
+		}
 		return targets;
 	}
 
@@ -330,6 +339,8 @@ public class PreIOCProcessor extends AbstractProcessor {
 
 		if(annotationClass == BindString.class){
 			bindingClass.getAutoBindView().addBindString(id, field);
+		}else if(annotationClass == BindDimen.class){
+			bindingClass.getAutoBindView().addBindDimen(id, field);
 		}
 	
 	    erasedTargetNames.add(enclosingElement.toString());

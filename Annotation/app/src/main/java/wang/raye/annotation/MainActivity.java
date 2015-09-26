@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import wang.raye.preioc.PreIOC;
 import wang.raye.preioc.annotation.BindById;
+import wang.raye.preioc.annotation.BindDimen;
 import wang.raye.preioc.annotation.BindString;
 import wang.raye.preioc.annotation.OnCheckedChanged;
 import wang.raye.preioc.annotation.OnClick;
@@ -30,7 +31,8 @@ public class MainActivity extends ActionBarActivity {
     Button button;
     @BindString(R.string.test)
     String name;
-
+    @BindDimen(R.dimen.activity_horizontal_margin)
+    int size;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +72,6 @@ public class MainActivity extends ActionBarActivity {
 
     @OnClick({R.id.bindString})
     public void get(View view){
-        Toast.makeText(this,"getDimensionPixelOffset is "+getResources().getDimensionPixelOffset(R.dimen.activity_horizontal_margin)
-                +"    getDimension "+getResources().getDimension(R.dimen.activity_horizontal_margin),Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,"size is " + size,Toast.LENGTH_SHORT).show();
     }
 }

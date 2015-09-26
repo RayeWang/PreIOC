@@ -87,6 +87,10 @@ public abstract class AbstractFind {
 	public String getString(Object source,int id){
 		return getContext(source).getResources().getString(id);
 	}
+	
+	public int getDimen(Object source,int id){
+		return getContext(source).getResources().getDimensionPixelOffset(id);
+	}
 
 	protected abstract View findView(Object source, int id);
 

@@ -130,6 +130,9 @@ public class AutoBindView {
 	public void addBindString(int id,String field){
 		bindResources.put(id, new BindResources(field, BindResources.STRING));
 	}
+	public void addBindDimen(int id,String field){
+		bindResources.put(id, new BindResources(field, BindResources.DIMEN));
+	}
 	/**
 	 * 自动生成Java代码
 	 * 
@@ -383,7 +386,10 @@ public class AutoBindView {
 					builder.append("		target.").append(value.getField())
 					.append(" = finder.getString(source,").append(id).append(");\n");
 					break;
-	
+				case BindResources.DIMEN:
+					builder.append("		target.").append(value.getField())
+					.append(" = finder.getDimen(source,").append(id).append(");\n");
+					break;
 				default:
 					break;
 			}
