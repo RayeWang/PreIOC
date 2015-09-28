@@ -21,7 +21,7 @@ import wang.raye.preioc.find.ViewFind;
  */
 public class PreIOC {
 
-	private static final boolean debug = true;
+	private static final boolean debug = false;
 	private static final String TAG = PreIOC.class.getName();
 	private static final ViewBinder<Object> NULL_BIND = new ViewBinder<Object>() {
 		
