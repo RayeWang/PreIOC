@@ -58,12 +58,7 @@ public class Adapter extends BaseAdapter {
 			view = (ViewHolder) convertView.getTag();
 		}
 		PreIOC.binderData(view,this,position);
-		view.format.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				return false;
-			}
-		});
+	
 		return convertView;
 	}
 
