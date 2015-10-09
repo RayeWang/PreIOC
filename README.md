@@ -1,4 +1,6 @@
 #ProIOC 预编译注解框架，解决在Android端使用注解性能低下，妈妈再也不用担心我在项目中使用注解降低性能了（交流群：123965382）
+### [使用文档](http://git.oschina.net/raywang2014/PreIOC/wikis/home)
+
 目前框架有BindArray（绑定数组），BindById（绑定控件），BindData（绑定数据,适用于适配器），BindDimen（绑定dimen值），BindString（绑定字符串），OnCheckedChanged（OnCheckedChanged监听），OnClick（OnClick监听），OnItemClick（AdapterView的OnItemClick监听），OnTouch（OnTouch监听）这些常用的注解，如果有需要，以后会继续完善<br/>
 [使用说明](http://git.oschina.net/raywang2014/PreIOC/wikis/home)，目前说明还在完善中，项目中包含一个Android Studio的demo项目，里面包含了绝大多数注解的使用例子（我记得应该是全部）<br/>
 ### 性能指数<br/>
