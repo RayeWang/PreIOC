@@ -22,6 +22,8 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedSourceVersion;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -42,6 +44,7 @@ import wang.raye.preioc.annotation.OnCheckedChanged;
 import wang.raye.preioc.annotation.OnClick;
 import wang.raye.preioc.annotation.OnItemClick;
 import wang.raye.preioc.annotation.OnTouch;
+import javax.tools.Diagnostic;
 
 /**
  * 注解预处理的类
@@ -55,6 +58,26 @@ public class PreIOCProcessor extends AbstractProcessor {
 
 	private Filer filer;
 
+	@Override
+	public SourceVersion getSupportedSourceVersion() {
+		SupportedSourceVersion ssv = this.getClass().getAnnotation(SupportedSourceVersion.class);
+		SourceVersion sv = null;
+		if (ssv == null) {
+			sv = SourceVersion.RELEASE_6;
+			if (isInitialized()) {
+				processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,
+						"No SupportedSourceVersion annotation " +
+								"found on " + this.getClass().getName() +
+								", returning " + sv + ".");
+			}
+
+		} else {
+			sv = ssv.value();
+		}
+		return sv;
+
+	}
+	
 	public synchronized void init(ProcessingEnvironment env) {
 		super.init(env);
 
