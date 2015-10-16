@@ -1,28 +1,32 @@
-#PreIOC Ô¤±àÒë×¢½â¿ò¼Ü£¬½â¾öÔÚAndroid¶ËÊ¹ÓÃ×¢½âĞÔÄÜµÍÏÂ£¬ÂèÂèÔÙÒ²²»ÓÃµ£ĞÄÎÒÔÚÏîÄ¿ÖĞÊ¹ÓÃ×¢½â½µµÍĞÔÄÜÁË£¨½»Á÷Èº£º123965382£©
-### [Ê¹ÓÃÎÄµµ](http://git.oschina.net/raywang2014/PreIOC/wikis/home)
+#PreIOC é¢„ç¼–è¯‘æ³¨è§£æ¡†æ¶ï¼Œè§£å†³åœ¨Androidç«¯ä½¿ç”¨æ³¨è§£æ€§èƒ½ä½ä¸‹ï¼Œå¦ˆå¦ˆå†ä¹Ÿä¸ç”¨æ‹…å¿ƒæˆ‘åœ¨é¡¹ç›®ä¸­ä½¿ç”¨æ³¨è§£é™ä½æ€§èƒ½äº†ï¼ˆäº¤æµç¾¤ï¼š123965382ï¼‰
+### [ä½¿ç”¨æ–‡æ¡£](http://git.oschina.net/raywang2014/PreIOC/wikis/home)
 
-Ä¿Ç°¿ò¼ÜÓĞBindArray£¨°ó¶¨Êı×é£©£¬BindById£¨°ó¶¨¿Ø¼ş£©£¬BindData£¨°ó¶¨Êı¾İ,ÊÊÓÃÓÚÊÊÅäÆ÷£©£¬BindDimen£¨°ó¶¨dimenÖµ£©£¬BindString£¨°ó¶¨×Ö·û´®£©£¬OnCheckedChanged£¨OnCheckedChanged¼àÌı£©£¬OnClick£¨OnClick¼àÌı£©£¬OnItemClick£¨AdapterViewµÄOnItemClick¼àÌı£©£¬OnTouch£¨OnTouch¼àÌı£©ÕâĞ©³£ÓÃµÄ×¢½â£¬Èç¹ûÓĞĞèÒª£¬ÒÔºó»á¼ÌĞøÍêÉÆ<br/>
-[Ê¹ÓÃËµÃ÷](http://git.oschina.net/raywang2014/PreIOC/wikis/home)£¬Ä¿Ç°ËµÃ÷»¹ÔÚÍêÉÆÖĞ£¬ÏîÄ¿ÖĞ°üº¬Ò»¸öAndroid StudioµÄdemoÏîÄ¿£¬ÀïÃæ°üº¬ÁË¾ø´ó¶àÊı×¢½âµÄÊ¹ÓÃÀı×Ó£¨ÎÒ¼ÇµÃÓ¦¸ÃÊÇÈ«²¿£©<br/>
-### ĞÔÄÜÖ¸Êı<br/>
-#### Í¨¹ıºÍÔ­Éú¡¢Xutil¡¢ÒÔ¼°PreIOC½øĞĞ°ó¶¨200¸öTextViewºÍÉèÖÃOnClick¼àÌıºÄÊ±½øĞĞ¶Ô±È<br/>
-ĞéÄâ»ú<br/>
-![ĞéÄâ»úºÄÊ±](http://git.oschina.net/uploads/images/2015/1008/143534_98a82dd1_108170.png "ĞéÄâ»úºÄÊ±")<br/>
-Õæ»ú£¨ºìÃ×NoteÔöÇ¿°æ£©<br/>
-![Õæ»ú£¨ºìÃ×NoteÔöÇ¿°æ£©](http://git.oschina.net/uploads/images/2015/1008/143705_afeff921_108170.png "Õæ»ú£¨ºìÃ×NoteÔöÇ¿°æ£©")<br/>
-### ¼òÒ×½Ì³Ì<br/>
-[ÏÂÔØPreIOC.jar](http://git.oschina.net/raywang2014/PreIOC/raw/master/Annotation/app/libs/PreIOC-0.0.1.jar)<br/>
+ç›®å‰æ¡†æ¶æœ‰BindArrayï¼ˆç»‘å®šæ•°ç»„ï¼‰ï¼ŒBindByIdï¼ˆç»‘å®šæ§ä»¶ï¼‰ï¼ŒBindDataï¼ˆç»‘å®šæ•°æ®,é€‚ç”¨äºé€‚é…å™¨ï¼‰ï¼ŒBindDimenï¼ˆç»‘å®šdimenå€¼ï¼‰ï¼ŒBindStringï¼ˆç»‘å®šå­—ç¬¦ä¸²ï¼‰ï¼ŒOnCheckedChangedï¼ˆOnCheckedChangedç›‘å¬ï¼‰ï¼ŒOnClickï¼ˆOnClickç›‘å¬ï¼‰ï¼ŒOnItemClickï¼ˆAdapterViewçš„OnItemClickç›‘å¬ï¼‰ï¼ŒOnTouchï¼ˆOnTouchç›‘å¬ï¼‰è¿™äº›å¸¸ç”¨çš„æ³¨è§£ï¼Œå¦‚æœæœ‰éœ€è¦ï¼Œä»¥åä¼šç»§ç»­å®Œå–„<br/>
+[ä½¿ç”¨è¯´æ˜](http://git.oschina.net/raywang2014/PreIOC/wikis/home)ï¼Œç›®å‰è¯´æ˜è¿˜åœ¨å®Œå–„ä¸­ï¼Œé¡¹ç›®ä¸­åŒ…å«ä¸€ä¸ªAndroid Studioçš„demoé¡¹ç›®ï¼Œé‡Œé¢åŒ…å«äº†ç»å¤§å¤šæ•°æ³¨è§£çš„ä½¿ç”¨ä¾‹å­ï¼ˆæˆ‘è®°å¾—åº”è¯¥æ˜¯å…¨éƒ¨ï¼‰<br/>
+### æ€§èƒ½æŒ‡æ•°<br/>
+#### é€šè¿‡å’ŒåŸç”Ÿã€Xutilã€ä»¥åŠPreIOCè¿›è¡Œç»‘å®š200ä¸ªTextViewå’Œè®¾ç½®OnClickç›‘å¬è€—æ—¶è¿›è¡Œå¯¹æ¯”<br/>
+è™šæ‹Ÿæœº<br/>
+![è™šæ‹Ÿæœºè€—æ—¶](http://git.oschina.net/uploads/images/2015/1008/143534_98a82dd1_108170.png "è™šæ‹Ÿæœºè€—æ—¶")<br/>
+çœŸæœºï¼ˆçº¢ç±³Noteå¢å¼ºç‰ˆï¼‰<br/>
+![çœŸæœºï¼ˆçº¢ç±³Noteå¢å¼ºç‰ˆï¼‰](http://git.oschina.net/uploads/images/2015/1008/143705_afeff921_108170.png "çœŸæœºï¼ˆçº¢ç±³Noteå¢å¼ºç‰ˆï¼‰")<br/>
+### ç®€æ˜“æ•™ç¨‹<br/>
+[ä¸‹è½½PreIOC.jar](http://git.oschina.net/raywang2014/PreIOC/raw/master/Annotation/app/libs/PreIOC-0.0.1.jar)<br/>
 #### Android Studio<br/>
-½«ÏÂÔØºÃµÄPreIOC.jar·ÅÔÚlibsÎÄ¼ş¼ĞÏÂ£¬²¢Ìí¼ÓÓ¦ÓÃ£¬¿ÉÒÔÊÖ¶¯ĞŞ¸Äbuild.gradle£¬Ò²¿ÉÒÔÍ¨¹ıÓÒ¼üÖ±½ÓÌí¼ÓÓ¦ÓÃ£¨AS1.3£©<br/>
+##### æ–¹æ³•ä¸€
+åœ¨build.gradle ä¸­é…ç½® compile 'wang.raye.preioc:preioccore:1.0.2'
+##### æ–¹æ³•äºŒ
+
+å°†ä¸‹è½½å¥½çš„PreIOC.jaræ”¾åœ¨libsæ–‡ä»¶å¤¹ä¸‹ï¼Œå¹¶æ·»åŠ åº”ç”¨ï¼Œå¯ä»¥æ‰‹åŠ¨ä¿®æ”¹build.gradleï¼Œä¹Ÿå¯ä»¥é€šè¿‡å³é”®ç›´æ¥æ·»åŠ åº”ç”¨ï¼ˆAS1.3ï¼‰<br/>
 #### Eclipse<br/>
-½«ÏÂÔØºÃµÄPreIOC.jar·ÅÔÚlibsÎÄ¼ş¼ĞÏÂ£¬ÓÒ»÷ÏîÄ¿£¬Ñ¡ÔñProperties->Java Compiler-><br/>
-È»ºóÈçÏÂÉèÖÃ<br/>
-![EclipseÉèÖÃ](http://git.oschina.net/uploads/images/2015/1008/150802_0f88345f_108170.png "EclipseÉèÖÃ")<br/>
-ÔÙµã»÷ÈçÏÂ½çÃæ<br/>
-![EclipseÉèÖÃ](http://git.oschina.net/uploads/images/2015/1008/150911_eddcb114_108170.png "EclipseÉèÖÃ")<br/>
-ÉèÖÃºÃºóµã»÷add jar£¬Ìí¼ÓPreIOC.jar<br/>
-![Ìí¼ÓPreIOC.jar](http://git.oschina.net/uploads/images/2015/1008/151001_7e69114d_108170.png "Ìí¼ÓPreIOC.jar")<br/>
-µã»÷ok£¬È»ºóapply¾ÍOKÁË<br/>
-Ê¾Àı´úÂë£¬´ËÎªAnnotationÏîÄ¿ÖĞµÄMainActivity<br/>
+å°†ä¸‹è½½å¥½çš„PreIOC.jaræ”¾åœ¨libsæ–‡ä»¶å¤¹ä¸‹ï¼Œå³å‡»é¡¹ç›®ï¼Œé€‰æ‹©Properties->Java Compiler-><br/>
+ç„¶åå¦‚ä¸‹è®¾ç½®<br/>
+![Eclipseè®¾ç½®](http://git.oschina.net/uploads/images/2015/1008/150802_0f88345f_108170.png "Eclipseè®¾ç½®")<br/>
+å†ç‚¹å‡»å¦‚ä¸‹ç•Œé¢<br/>
+![Eclipseè®¾ç½®](http://git.oschina.net/uploads/images/2015/1008/150911_eddcb114_108170.png "Eclipseè®¾ç½®")<br/>
+è®¾ç½®å¥½åç‚¹å‡»add jarï¼Œæ·»åŠ PreIOC.jar<br/>
+![æ·»åŠ PreIOC.jar](http://git.oschina.net/uploads/images/2015/1008/151001_7e69114d_108170.png "æ·»åŠ PreIOC.jar")<br/>
+ç‚¹å‡»okï¼Œç„¶åapplyå°±OKäº†<br/>
+ç¤ºä¾‹ä»£ç ï¼Œæ­¤ä¸ºAnnotationé¡¹ç›®ä¸­çš„MainActivity<br/>
 ```
 package wang.raye.annotation;
 
