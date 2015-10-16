@@ -26,7 +26,8 @@ compile 'wang.raye.preioc:preioccore:1.0.2'
 [下载PreIOC.jar](http://git.oschina.net/raywang2014/PreIOC/raw/master/Annotation/app/libs/PreIOC-0.0.1.jar)<br/>
 #### Android Studio<br/>
 ##### 方法一
-在build.gradle 中配置 ```
+在build.gradle 中配置 
+```
 compile 'wang.raye.preioc:preioccore:1.0.2'
 ```
 ##### 方法二
