@@ -3,6 +3,15 @@
 
 目前框架有BindArray（绑定数组），BindById（绑定控件），BindData（绑定数据,适用于适配器），BindDimen（绑定dimen值），BindString（绑定字符串），OnCheckedChanged（OnCheckedChanged监听），OnClick（OnClick监听），OnItemClick（AdapterView的OnItemClick监听），OnTouch（OnTouch监听）这些常用的注解，如果有需要，以后会继续完善<br/>
 [使用说明](http://git.oschina.net/raywang2014/PreIOC/wikis/home)，目前说明还在完善中，项目中包含一个Android Studio的demo项目，里面包含了绝大多数注解的使用例子（我记得应该是全部）<br/>
+### Maven及Gradle相关配置
+#### Maven
+<dependency>
+	<groupId>wang.raye.preioc</groupId>
+  	<artifactId>preioccore</artifactId>
+	<version>1.0.2</version>
+</dependency>
+#### Gradle
+compile 'wang.raye.preioc:preioccore:1.0.2'
 ### 性能指数<br/>
 #### 通过和原生、Xutil、以及PreIOC进行绑定200个TextView和设置OnClick监听耗时进行对比<br/>
 虚拟机<br/>
@@ -16,7 +25,7 @@
 在build.gradle 中配置 compile 'wang.raye.preioc:preioccore:1.0.2'
 ##### 方法二
 
-将下载好的PreIOC.jar放在libs文件夹下，并添加应用，可以手动修改build.gradle，也可以通过右键直接添加应用（AS1.3）<br/>
+将下载好的PreIOC.jar放在libs文件夹下或通过maven引用，并添加应用，可以手动修改build.gradle，也可以通过右键直接添加应用（AS1.3）<br/>
 #### Eclipse<br/>
 将下载好的PreIOC.jar放在libs文件夹下，右击项目，选择Properties->Java Compiler-><br/>
 然后如下设置<br/>
