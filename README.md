@@ -5,13 +5,17 @@
 [使用说明](http://git.oschina.net/raywang2014/PreIOC/wikis/home)，目前说明还在完善中，项目中包含一个Android Studio的demo项目，里面包含了绝大多数注解的使用例子（我记得应该是全部）<br/>
 ### Maven及Gradle相关配置
 #### Maven
+```
 <dependency>
 	<groupId>wang.raye.preioc</groupId>
   	<artifactId>preioccore</artifactId>
 	<version>1.0.2</version>
 </dependency>
+```
 #### Gradle
+```
 compile 'wang.raye.preioc:preioccore:1.0.2'
+```
 ### 性能指数<br/>
 #### 通过和原生、Xutil、以及PreIOC进行绑定200个TextView和设置OnClick监听耗时进行对比<br/>
 虚拟机<br/>
@@ -22,7 +26,9 @@ compile 'wang.raye.preioc:preioccore:1.0.2'
 [下载PreIOC.jar](http://git.oschina.net/raywang2014/PreIOC/raw/master/Annotation/app/libs/PreIOC-0.0.1.jar)<br/>
 #### Android Studio<br/>
 ##### 方法一
-在build.gradle 中配置 compile 'wang.raye.preioc:preioccore:1.0.2'
+在build.gradle 中配置 ```
+compile 'wang.raye.preioc:preioccore:1.0.2'
+```
 ##### 方法二
 
 将下载好的PreIOC.jar放在libs文件夹下或通过maven引用，并添加应用，可以手动修改build.gradle，也可以通过右键直接添加应用（AS1.3）<br/>
