@@ -3,6 +3,8 @@ package wang.raye.preioc.internal.auto;
 import java.util.LinkedHashMap;
 
 import wang.raye.preioc.internal.DataBinding;
+import wang.raye.preioc.internal.PreIOCProcessor;
+
 /**
  * 自动生成绑定数据到控件代码的类
  * @author Raye
@@ -20,6 +22,9 @@ public class AutoBindData {
 	/** 当前被注解的类的全称 */
 	private final String targetClass;
 
+	private String holderName;
+	private int layoutId;
+
 
 	public AutoBindData(String className, String classPackage,
 						String targetClass) {
@@ -28,6 +33,14 @@ public class AutoBindData {
 		this.classPackage = classPackage;
 		this.targetClass = targetClass;
 	}
+
+    public void setHolderName(String name){
+        this.holderName = name;
+    }
+
+    public void setLayoutId(int id){
+        this.layoutId = id;
+    }
 
 	/**
 	 * 是否需要绑定数据
@@ -60,20 +73,22 @@ public class AutoBindData {
 		// 设置包名
 		builder.append("package ").append(this.classPackage).append(";\n\n");
 		builder.append("import android.widget.BaseAdapter;\n");
+        builder.append("import wang.raye.preioc.PreIOC;\n");
+        builder.append("import android.view.View;\n");
+        builder.append("import wang.raye.preioc.PreAdapter;\n");
 		builder.append("import wang.raye.preioc.ViewDataBinder;\n\n");
 		// 创建类名
-		builder.append("public class ").append(className.substring(0,className.lastIndexOf("$$")))
+		builder.append("public class ").append(className.substring(0, className.lastIndexOf("$$")))
 				.append("$$ViewDataBinder")
-						// 创建被注解处理的类的类型,前面是ViewHolder
-				.append("<T extends ").append(this.targetClass).append(",A extends ")
-				//适配器
-				.append(targetClass.substring(0, targetClass.lastIndexOf(".")))
+                        // 创建被注解处理的类的类型,前面是ViewHolder
+				.append("<T extends ")
+                        //适配器
+                .append(targetClass.substring(0, targetClass.lastIndexOf(".")))
 
-				.append(">")
-				.append(" implements ViewDataBinder<T,A>{\n");
-		builder.append("\n");
+                .append(">")
+                .append(" extends ViewDataBinder<T>{\n");
+        builder.append("\n");
 
-		builder.append('\n');
 
 		autoBindDataMethod(builder);
 		builder.append("}\n");
@@ -86,24 +101,32 @@ public class AutoBindData {
 	 * 自动生成绑定数据的方法
 	 * @param builder
 	 */
-	private void autoBindDataMethod(StringBuilder builder){
-		builder.append("  @Override ")
-				.append("	public void bindData(final T t,final A")
-				.append(" adapter,int position) {\n");
-
+	private void autoBindDataMethod(StringBuilder builder) {
+        builder.append("    @Override \n")
+                .append("	public View bindData(View convertView,int position) {\n");
+        builder.append("        ").append(this.targetClass).append(" view = null;\n");
+        builder.append("        if(convertView == null){\n");
+        builder.append("            convertView = inflater.inflate(").append(layoutId)
+                .append(", null);\n");
+        builder.append("            view = new ").append(holderName).append("();\n");
+        builder.append("            PreIOC.binder(view,convertView);\n");
+        builder.append("            convertView.setTag(view);\n");
+        builder.append("        }else{\n");
+        builder.append("            view = (").append(holderName).append(")")
+                .append("convertView.getTag();\n").append("         }\n");
 		for(DataBinding binding : dataBinds.values()){
 			if(!"".equals(binding.getFormat())){
-				builder.append("		t.").append(binding.getField()).append(".setText(");
+				builder.append("		view.").append(binding.getField()).append(".setText(");
 				builder.append("adapter.").append(binding.getFormat()).append("(position));\n");
 			}else if( !"".equals(binding.getDataName())){
-				builder.append("		t.").append(binding.getField()).append(".setText(");
+				builder.append("		view.").append(binding.getField()).append(".setText(");
 				builder.append("adapter.getItem(position).get")
 						.append(toFirstUpperCase(binding.getDataName())).append("());\n");
 			}
 
 		}
-
-		builder.append("\n}\n");
+        builder.append("        return convertView;");
+		builder.append("\n      }\n");
 	}
 
 	private String toFirstUpperCase(String str){

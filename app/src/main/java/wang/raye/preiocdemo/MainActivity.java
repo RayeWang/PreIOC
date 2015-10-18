@@ -10,6 +10,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 import wang.raye.preioc.PreIOC;
 import wang.raye.preioc.annotation.BindArray;
 import wang.raye.preioc.annotation.BindById;
@@ -42,7 +44,11 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         PreIOC.binder(this);
-        listView.setAdapter(new Adapter(this));
+        ArrayList<Bean> beans = new ArrayList<Bean>();
+        for(int i = 0;i < 100;i++){
+            beans.add(new Bean("name:"+i));
+        }
+        listView.setAdapter(new Adapter(beans,this));
         bindString.setText(name);
     }
 

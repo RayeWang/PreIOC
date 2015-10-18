@@ -1,5 +1,8 @@
 package wang.raye.preioc;
 
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.BaseAdapter;
 
 /**
@@ -7,13 +10,24 @@ import android.widget.BaseAdapter;
  * @author Raye
  *
  */
-public interface ViewDataBinder<T extends Object,A extends BaseAdapter> {
+public abstract class ViewDataBinder<T extends BaseAdapter> {
 
+	protected T adapter;
+	protected LayoutInflater inflater;
 	/**
 	 * 绑定数据的方法
-	 * @param t ViewHolder的对象
-	 * @param adapter 适配器
+	 * @param convertView getView的View对象
 	 * @param position 当前数据行
 	 */
-	public void bindData(final T t,final A adapter,int position);
+	public abstract View bindData(View convertView,int position);
+
+	/**
+	 * 初始化绑定方法
+	 * @param context
+	 * @param adapter
+	 */
+	protected final void init(Context context,T adapter){
+		this.inflater = LayoutInflater.from(context);
+		this.adapter = adapter;
+	}
 }

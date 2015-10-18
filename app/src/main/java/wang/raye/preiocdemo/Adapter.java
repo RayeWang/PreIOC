@@ -1,79 +1,36 @@
 package wang.raye.preiocdemo;
 
-import java.util.ArrayList;
-
 import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import wang.raye.preioc.PreIOC;
+import java.util.ArrayList;
+
+import wang.raye.preioc.PreAdapter;
 import wang.raye.preioc.annotation.BindById;
 import wang.raye.preioc.annotation.BindData;
+import wang.raye.preioc.annotation.BindViewHolder;
 
-public class Adapter extends BaseAdapter {
+/**
+ * Created by raye on 15-10-18.
+ */
 
-	private LayoutInflater inflater;
-	private ArrayList<Bean> beans;
+public class Adapter extends PreAdapter<Bean>{
 
+    public Adapter(ArrayList<Bean> datas, Context context) {
+        super(datas, context, ViewHolder.class);
+    }
+    protected String format(int position){
+        return "format:"+position;
+    }
+    @BindViewHolder(R.layout.item)
+    static class ViewHolder {
+        @BindById(R.id.name)
+        @BindData(value = "name")
+        TextView name;
 
-	public Adapter(Context context){
-		this.inflater = LayoutInflater.from(context);
-		beans = new ArrayList<Bean>();
-		for(int i = 0;i < 100;i++){
-			beans.add(new Bean("name:"+i));
-		}
-	}
-	@Override
-	public int getCount() {
-		if(beans != null){
-			return beans.size();
-		}
-		return 0;
-	}
+        @BindById(R.id.format)
+        @BindData(format = "format")
+        TextView format;
+    }
 
-	@Override
-	public Bean getItem(int position) {
-		return beans.get(position);
-	}
-
-	@Override
-	public long getItemId(int position) {
-		return 0;
-	}
-
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		ViewHolder view;
-		if(convertView == null){
-			convertView = inflater.inflate(R.layout.item, parent,false);
-			view = new ViewHolder(convertView);
-			convertView.setTag(view);
-		}else{
-			view = (ViewHolder) convertView.getTag();
-		}
-		PreIOC.binderData(view, this, position);
-	
-		return convertView;
-	}
-
-	protected String format(int position){
-		return "format:"+position;
-	}
-	static class ViewHolder{
-		@BindById(R.id.name)
-		@BindData(value = "name")
-		TextView name;
-
-		@BindById(R.id.format)
-		@BindData(format = "format")
-		TextView format;
-		
-		ViewHolder(View convertView){
-			PreIOC.binder(this,convertView);
-		}
-
-	}
 }

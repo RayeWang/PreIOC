@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -28,6 +29,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -35,6 +37,7 @@ import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import javax.tools.JavaFileObject;
 
+import jdk.nashorn.internal.runtime.regexp.joni.constants.EncloseType;
 import wang.raye.preioc.annotation.BindArray;
 import wang.raye.preioc.annotation.BindById;
 import wang.raye.preioc.annotation.BindData;
@@ -44,6 +47,8 @@ import wang.raye.preioc.annotation.OnCheckedChanged;
 import wang.raye.preioc.annotation.OnClick;
 import wang.raye.preioc.annotation.OnItemClick;
 import wang.raye.preioc.annotation.OnTouch;
+import wang.raye.preioc.annotation.BindViewHolder;
+
 import javax.tools.Diagnostic;
 
 /**
@@ -60,21 +65,21 @@ public class PreIOCProcessor extends AbstractProcessor {
 
 	@Override
 	public SourceVersion getSupportedSourceVersion() {
-//		SupportedSourceVersion ssv = this.getClass().getAnnotation(SupportedSourceVersion.class);
-//		SourceVersion sv = null;
-//		if (ssv == null) {
-//			sv = SourceVersion.RELEASE_6;
-//			if (isInitialized()) {
-//				processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,
-//						"No SupportedSourceVersion annotation " +
-//								"found on " + this.getClass().getName() +
-//								", returning " + sv + ".");
-//			}
-//
-//		} else {
-//			sv = ssv.value();
-//		}
-		return SourceVersion.RELEASE_7;
+		SupportedSourceVersion ssv = this.getClass().getAnnotation(SupportedSourceVersion.class);
+		SourceVersion sv = null;
+		if (ssv == null) {
+			sv = SourceVersion.RELEASE_7;
+			if (isInitialized()) {
+				processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,
+						"No SupportedSourceVersion annotation " +
+								"found on " + this.getClass().getName() +
+								", returning " + sv + ".");
+			}
+
+		} else {
+			sv = ssv.value();
+		}
+		return sv;
 
 	}
 
@@ -98,25 +103,27 @@ public class PreIOCProcessor extends AbstractProcessor {
 		types.add(OnTouch.class.getCanonicalName());
 		types.add(OnCheckedChanged.class.getCanonicalName());
 		types.add(OnItemClick.class.getCanonicalName());
+		types.add(BindViewHolder.class.getCanonicalName());
 		return types;
 	}
 
 	@Override
 	public boolean process(Set<? extends TypeElement> elements, RoundEnvironment env) {
 		// 被注解的类和类中属性相关的注解键值对
-		LinkedHashMap<TypeElement, BindClass> targetClassMap = parseTargets(env);
-		for (Map.Entry<TypeElement, BindClass> entry : targetClassMap.entrySet()) {
-			TypeElement typeElement = entry.getKey();
+		LinkedHashMap<Element, BindClass> targetClassMap = parseTargets(env);
+		for (Map.Entry<Element, BindClass> entry : targetClassMap.entrySet()) {
+			Element typeElement = entry.getKey();
 			BindClass bindingClass = entry.getValue();
-
 			try {
-				JavaFileObject jfo = this.filer.createSourceFile(bindingClass.getViewBinderCN(), new Element[] { typeElement });
+				JavaFileObject jfo = this.filer.createSourceFile(bindingClass.getViewBinderCN(),
+						new Element[] { typeElement });
 				Writer writer = jfo.openWriter();
 				writer.write(bindingClass.toJava());
 				writer.flush();
 				writer.close();
 				if(bindingClass.isBindData()){
-					JavaFileObject djfo = this.filer.createSourceFile(bindingClass.getViewDataBinderCN(), new Element[]{typeElement});
+					JavaFileObject djfo = this.filer.createSourceFile(bindingClass.
+							getViewDataBinderCN(), new Element[]{typeElement});
 					Writer dw = djfo.openWriter();
 					dw.write(bindingClass.toDataBinderJava());
 					dw.flush();
@@ -125,7 +132,8 @@ public class PreIOCProcessor extends AbstractProcessor {
 				}
 //					writeLog(bindingClass.toJava());
 			} catch (IOException e) {
-				error(typeElement, "Unable to write view binder for type %s: %s", typeElement, e.getMessage());
+				error(typeElement, "Unable to write view binder for type %s: %s",
+						typeElement, e.getMessage());
 			}
 		}
 		return true;
@@ -134,17 +142,17 @@ public class PreIOCProcessor extends AbstractProcessor {
 	/**
 	 * 获取所有
 	 *
-	 * @param evn
+	 * @param env
 	 * @return
 	 */
-	private LinkedHashMap<TypeElement, BindClass> parseTargets(RoundEnvironment env) {
-		LinkedHashMap<TypeElement, BindClass> targets = new LinkedHashMap<>();
+	private LinkedHashMap<Element, BindClass> parseTargets(RoundEnvironment env) {
+		LinkedHashMap<Element, BindClass> targets = new LinkedHashMap<>();
 		// 哪些类以及是处理过的
-		LinkedHashSet<String> erasedTargetNames = new LinkedHashSet<>();
+//		LinkedHashSet<String> erasedTargetNames = new LinkedHashSet<>();
 		for (Element element : env.getElementsAnnotatedWith(BindById.class)) {
 			// 绑定控件的
 			try {
-				parseBindById(element, targets, erasedTargetNames);
+				parseBindById(element, targets);
 			} catch (Exception e) {
 				error(element, BindById.class.getName() + "parse error:%s", e);
 			}
@@ -152,7 +160,7 @@ public class PreIOCProcessor extends AbstractProcessor {
 		//绑定数据
 		for(Element element : env.getElementsAnnotatedWith(BindData.class)){
 			try{
-				parseBindData(element, targets, erasedTargetNames);
+				parseBindData(element, targets);
 			}catch (Exception e) {
 				error(element, BindData.class.getName() + "parse error:%s", e);
 			}
@@ -161,7 +169,7 @@ public class PreIOCProcessor extends AbstractProcessor {
 		for(Element element : env.getElementsAnnotatedWith(OnClick.class)){
 			//绑定点击事件的
 			try{
-				parseLisenter(element, targets, erasedTargetNames,OnClick.class);
+				parseLisenter(element, targets, OnClick.class);
 			}catch(Exception e){
 				error(element, OnClick.class.getName() + "parse error:%s", e);
 			}
@@ -169,7 +177,7 @@ public class PreIOCProcessor extends AbstractProcessor {
 		for(Element element : env.getElementsAnnotatedWith(OnTouch.class)){
 			//绑定Touch事件的
 			try{
-				parseLisenter(element, targets, erasedTargetNames,OnTouch.class);
+				parseLisenter(element, targets,OnTouch.class);
 			}catch(Exception e){
 				error(element, OnTouch.class.getName() + "parse error:%s", e);
 			}
@@ -177,7 +185,7 @@ public class PreIOCProcessor extends AbstractProcessor {
 		for(Element element : env.getElementsAnnotatedWith(OnCheckedChanged.class)){
 			//绑定OnCheckedChangeListener事件的
 			try{
-				parseLisenter(element, targets, erasedTargetNames,OnCheckedChanged.class);
+				parseLisenter(element, targets,OnCheckedChanged.class);
 			}catch(Exception e){
 				error(element, OnCheckedChanged.class.getName() + "parse error:%s", e);
 			}
@@ -185,7 +193,7 @@ public class PreIOCProcessor extends AbstractProcessor {
 		for(Element element : env.getElementsAnnotatedWith(OnItemClick.class)){
 			//绑定OnItemClick事件的
 			try{
-				parseLisenter(element, targets, erasedTargetNames,OnItemClick.class);
+				parseLisenter(element, targets,OnItemClick.class);
 			}catch(Exception e){
 				error(element, OnItemClick.class.getName() + "parse error:%s", e);
 			}
@@ -194,7 +202,7 @@ public class PreIOCProcessor extends AbstractProcessor {
 		for(Element element : env.getElementsAnnotatedWith(BindString.class)){
 			//绑定String
 			try{
-				parseResource(element, targets, erasedTargetNames,BindString.class);
+				parseResource(element, targets, BindString.class);
 			}catch(Exception e){
 				error(element, BindString.class.getName() + "parse error:%s", e);
 			}
@@ -202,7 +210,7 @@ public class PreIOCProcessor extends AbstractProcessor {
 		for(Element element : env.getElementsAnnotatedWith(BindDimen.class)){
 			//绑定Dimension
 			try{
-				parseResource(element, targets, erasedTargetNames,BindDimen.class);
+				parseResource(element, targets,BindDimen.class);
 			}catch(Exception e){
 				error(element, BindDimen.class.getName() + "parse error:%s", e);
 			}
@@ -210,9 +218,16 @@ public class PreIOCProcessor extends AbstractProcessor {
 		for(Element element : env.getElementsAnnotatedWith(BindArray.class)){
 			//绑定Array
 			try{
-				parseResource(element, targets, erasedTargetNames,BindArray.class);
+				parseResource(element, targets,BindArray.class);
 			}catch(Exception e){
 				error(element, BindArray.class.getName() + "parse error:%s", e);
+			}
+		}
+		for (Element element : env.getElementsAnnotatedWith(BindViewHolder.class)){
+			try{
+				parseViewHolder(element,targets);
+			}catch (Exception e){
+				error(element, BindViewHolder.class.getName() + "parse error:%s", e);
 			}
 		}
 		return targets;
@@ -223,10 +238,9 @@ public class PreIOCProcessor extends AbstractProcessor {
 	 *
 	 * @param element
 	 * @param targets
-	 * @param erasedTargetNames
+	 * //@param erasedTargetNames ,	LinkedHashSet<String> erasedTargetNames
 	 */
-	private void parseBindById(Element element, LinkedHashMap<TypeElement, BindClass> targets,
-							   LinkedHashSet<String> erasedTargetNames) {
+	private void parseBindById(Element element, LinkedHashMap<Element, BindClass> targets) {
 		if (isInaccessibleViaGeneratedCode(BindById.class, "fields", element)) {
 			return;
 		}
@@ -235,11 +249,11 @@ public class PreIOCProcessor extends AbstractProcessor {
 			// 多个绑定，暂时不做
 			// parseBindMany(element, targets, erasedTargetNames);
 		} else {
-			parseBindOne(element, targets, erasedTargetNames);
+			parseBindOne(element, targets);
 		}
 	}
-
-	private void parseBindOne(Element element, Map<TypeElement, BindClass> targets, Set<String> erasedTargetNames) {
+	//, Set<String> erasedTargetNames)
+	private void parseBindOne(Element element, Map<Element, BindClass> targets) {
 		boolean hasError = false;
 		// 获取被当前注解Element所在的类的TypeElement（toString等于当前的类名（含包名））
 		TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
@@ -288,7 +302,7 @@ public class PreIOCProcessor extends AbstractProcessor {
 //						+ "eAndName(%s, %s)   bindingClass.addField(%s,binding)",
 //				enclosingElement.toString(), name, elementType.getKind().name(), id);
 
-		erasedTargetNames.add(enclosingElement.toString());
+//		erasedTargetNames.add(enclosingElement.toString());
 	}
 
 	/**
@@ -300,22 +314,31 @@ public class PreIOCProcessor extends AbstractProcessor {
 	 *            当前处理的类
 	 * @return
 	 */
-	private BindClass getOrCreateTargetClass(Map<TypeElement, BindClass> targetClassMap, TypeElement enclosingElement) {
+	private BindClass getOrCreateTargetClass(Map<Element, BindClass> targetClassMap,
+											 TypeElement enclosingElement) {
 		BindClass bindingClass = targetClassMap.get(enclosingElement);
 		if (bindingClass == null) {
+
 			String targetType = enclosingElement.getQualifiedName().toString();
 			String classPackage = getPackageName(enclosingElement);
 
 			String className = getClassName(enclosingElement, classPackage) + BINDING_CLASS_SUFFIX;
-
 			bindingClass = new BindClass(classPackage, className, targetType);
 			targetClassMap.put(enclosingElement, bindingClass);
 		}
 		return bindingClass;
 	}
 
-	private void parseLisenter(Element element, LinkedHashMap<TypeElement, BindClass> targets,
-							   LinkedHashSet<String> erasedTargetNames,Class annotationClass) throws Exception{
+	/**
+	 * 监听的处理
+	 //LinkedHashSet<String> erasedTargetNames,
+	 * @param element
+	 * @param targets
+	 * @param annotationClass
+	 * @throws Exception
+	 */
+	private void parseLisenter(Element element, LinkedHashMap<Element, BindClass> targets,
+							   Class annotationClass) throws Exception{
 
 		//理论上不用判断是否是使用在方法上的
 		//
@@ -345,16 +368,24 @@ public class PreIOCProcessor extends AbstractProcessor {
 			bindingClass.getAutoBindView().addOnItemClick(ids, methonName);
 		}
 
-		erasedTargetNames.add(enclosingElement.toString());
+//		erasedTargetNames.add(enclosingElement.toString());
 	}
 
 
-	private void parseResource(Element element, LinkedHashMap<TypeElement, BindClass> targets,
-							   LinkedHashSet<String> erasedTargetNames,Class annotationClass) throws Exception{
+	/**
+	 * 资源的处理LinkedHashSet<String> erasedTargetNames,
+	 * @param element
+	 * @param targets
+	 * @param annotationClass
+	 * @throws Exception
+	 */
+	private void parseResource(Element element, LinkedHashMap<Element, BindClass> targets,
+							   Class annotationClass) throws Exception{
 
 		//
 		// 获取被当前注解Element所在的类的TypeElement（toString等于当前的类名（含包名））
 		TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
+
 		//获取value的值（由于不知制定的类名，所以不能使用方法直接获取）
 		Annotation annotation = element.getAnnotation(annotationClass);
 		Method annotationValue = annotationClass.getDeclaredMethod("value");
@@ -379,20 +410,19 @@ public class PreIOCProcessor extends AbstractProcessor {
 			}else if(element.asType().toString().equals(int[].class.getCanonicalName())){
 				bindingClass.getAutoBindView().addBindIntArray(id, field);
 			}
-			writeLog(element.asType().toString());
 		}
 
-		erasedTargetNames.add(enclosingElement.toString());
+//		erasedTargetNames.add(enclosingElement.toString());
 	}
 
 	/**
-	 * 记录绑定数据的
+	 * 记录绑定数据的 ,
+	 LinkedHashSet<String> erasedTargetNames
 	 * @param element
 	 * @param targets
-	 * @param erasedTargetNames
+	 * //@param erasedTargetNames
 	 */
-	private void parseBindData(Element element, LinkedHashMap<TypeElement, BindClass> targets,
-							   LinkedHashSet<String> erasedTargetNames){
+	private void parseBindData(Element element, LinkedHashMap<Element, BindClass> targets){
 		TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
 		if (!isSubtypeOfType(element.asType(), VIEW_TYPE) ) {
 			error(element, "@%s 属性必须是View的子类 (%s.%s)", BindById.class.getSimpleName(),
@@ -408,12 +438,30 @@ public class PreIOCProcessor extends AbstractProcessor {
 
 		BindClass bindingClass = targets.get(enclosingElement);
 		if(bindingClass != null){
-			bindingClass.addDataBind(filedName, dataName,format);
+			bindingClass.addDataBind(filedName, dataName, format);
 		}else{
 			//创建一个被注解的类
 			bindingClass = getOrCreateTargetClass(targets, enclosingElement);
+
 			bindingClass.addDataBind(filedName, dataName,format);
 		}
+
+	}
+
+	/**
+	 * 处理ViewHolder的
+	 * @param element
+	 * @param targets
+	 */
+	private void parseViewHolder(Element element,LinkedHashMap<Element,BindClass> targets){
+		BindViewHolder bindViewHolder = element.getAnnotation(BindViewHolder.class);
+		int layoutId = bindViewHolder.value();
+		BindClass bindingClass = targets.get(element);
+		if (bindingClass == null){
+			bindingClass = getOrCreateTargetClass(targets, (TypeElement)element);
+		}
+
+		bindingClass.setViewHolder(element.toString(),layoutId);
 
 	}
 
@@ -424,7 +472,7 @@ public class PreIOCProcessor extends AbstractProcessor {
 	 * @param type
 	 * @return (含包名)
 	 */
-	private String getClassNameInClass(TypeElement type){
+	private String getClassNameInClass(TypeElement type) {
 		String clzName = type.getQualifiedName().toString();
 		return clzName.substring(0,clzName.lastIndexOf("."));
 	}
@@ -446,9 +494,11 @@ public class PreIOCProcessor extends AbstractProcessor {
 	 * @param type
 	 * @return
 	 */
-	private String getPackageName(TypeElement type) {
+	private String getPackageName(Element type) {
 		return elementUtils.getPackageOf(type).getQualifiedName().toString();
 	}
+
+
 
 	/**
 	 * 判断是否是接口
@@ -563,11 +613,11 @@ public class PreIOCProcessor extends AbstractProcessor {
 	/**
 	 * 记录错误日志
 	 *
-	 * @param str
+	 * @param message
 	 */
 	public static void writeLog(String message, Object... args) {
 		try {
-			FileWriter fw = new FileWriter(new File("D:/PreIOCLog.txt"), true);
+			FileWriter fw = new FileWriter(new File("./PreIOCLog.txt"), true);
 			fw.write(String.format(message, args) + "\n");
 			fw.close();
 		} catch (IOException e) {
@@ -577,7 +627,7 @@ public class PreIOCProcessor extends AbstractProcessor {
 
 	private void writeLog(String message) {
 		try {
-			FileWriter fw = new FileWriter(new File("D:/PreIOCLog.txt"), true);
+			FileWriter fw = new FileWriter(new File("./PreIOCLog.txt"), true);
 			fw.write(message + "\n");
 			fw.close();
 		} catch (IOException e) {

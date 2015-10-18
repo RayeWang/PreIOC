@@ -5,9 +5,12 @@ import java.util.Map;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.widget.BaseAdapter;
+
+import wang.raye.preioc.annotation.BindData;
 import wang.raye.preioc.find.AbstractFind;
 import wang.raye.preioc.find.ActivityFind;
 import wang.raye.preioc.find.DialogFind;
@@ -65,24 +68,42 @@ public class PreIOC {
 	}
 
 	/**
-	 * 绑定数据
-	 * @param viewHolder
+	 * 初始化ViewHolder
+	 * @param context
+	 * @param clz
+	 * @return
 	 */
-	public static void binderData(Object viewHolder,BaseAdapter adapter,int position){
-		Class<?> targetClass = viewHolder.getClass();
+	public static ViewDataBinder initViewHodler(Context context,Class clz,BaseAdapter adapter){
 		try {
-			ViewDataBinder vdb = findVDBForClass(targetClass);
+			ViewDataBinder vdb = findVDBForClass(clz);
 			if(vdb != null){
-				vdb.bindData(viewHolder, adapter, position);
+				vdb.init(context, adapter);
+				return vdb;
 			}
+			return null;
 		}catch(Exception e){
-			throw new RuntimeException("Unable to bind data for " + targetClass.getName(), e);
+			throw new RuntimeException("Unable to bind data for " + clz.getName(), e);
 		}
 	}
+//	/**
+//	 * 绑定数据
+//	 * @param viewHolder
+//	 */
+//	public static void binderData(Object viewHolder,BaseAdapter adapter,View convertView,int position){
+//		Class<?> targetClass = viewHolder.getClass();
+//		try {
+//			ViewDataBinder vdb = findVDBForClass(targetClass);
+//			if(vdb != null){
+//				vdb.bindData( adapter,convertView, position);
+//			}
+//		}catch(Exception e){
+//			throw new RuntimeException("Unable to bind data for " + targetClass.getName(), e);
+//		}
+//	}
 	/**
 	 * 绑定指定类对象的属性
 	 * @param target 被绑定的属性的所在类的对象
-	 * @param dialog 控件所在View
+	 * @param view 控件所在View
 	 */
 	public static void binder(Object target,View view){
 		binder(target,view,new ViewFind());

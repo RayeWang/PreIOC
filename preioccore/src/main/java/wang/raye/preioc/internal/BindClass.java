@@ -48,7 +48,10 @@ public final class BindClass {
 
 	}
 
-
+	protected void setViewHolder(String holderName,int layoutId){
+		this.autoBindData.setHolderName(holderName);
+		this.autoBindData.setLayoutId(layoutId);
+	}
 
 	/**
 	 * 添加一行需要绑定数据的记录
@@ -113,6 +116,9 @@ public final class BindClass {
 
 	}
 
+	protected AutoBindData getAutoBindData(){
+		return autoBindData;
+	}
 	protected String toDataBinderJava(){
 		return autoBindData.toJava();
 	}
