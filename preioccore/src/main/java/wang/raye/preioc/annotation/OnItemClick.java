@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * AdapterView的OnItemClickListener
- * 方法签名void onItemClick(AdapterView<?> parent, View view, int position, long id)
+ * 方法签名void onItemClick(AdapterView parent, View view, int position, long id)
  * @author Raye
  *
  */

@@ -74,8 +74,8 @@ public class AutoBindView {
 
 	/**
 	 * 添加一个OnClick事件的方法
-	 * @param id 使用此方法的控件id集合
-	 * @param name
+	 * @param ids 使用此方法的控件id集合
+	 * @param methonName
 	 */
 	public void addOnClick(int[] ids,String methonName) {
 		if(ids != null){
