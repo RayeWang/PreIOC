@@ -114,7 +114,8 @@ public class PreIOC {
 		try {
 			ViewBinder<Object> viewBinder = findViewBinderForClass(targetClass);
 			if (viewBinder != null) {
-				Log.i(TAG, "实例化成功，开始绑定:"+viewBinder.getClass().getName());
+				if (debug)
+					Log.i(TAG, "实例化成功，开始绑定:"+viewBinder.getClass().getName());
 				viewBinder.binder(finder, target, source);
 			}
 		} catch (Exception e) {
