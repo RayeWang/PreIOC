@@ -150,25 +150,14 @@ public class AutoBindView {
 		// 设置包名
 		builder.append("package ").append(classPackage).append(";\n\n");
 		// 有控件需要被绑定，导入View包
-		if ((!viewIdMap.isEmpty())) {
-			builder.append("import android.view.View;\n");
-			builder.append("import wang.raye.preioc.find.AbstractFind;\n");
-		}
-		if(onTouchs.size() > 0){
-			builder.append("import android.view.MotionEvent;\n");
-		}
-		if(onCheckedChanges.size() > 0){
-			builder.append("import android.widget.CompoundButton;\n");
-		}
-		if(onItemClicks.size() > 0){
-			builder.append("import android.widget.AdapterView;\n");
-		}
+		builder.append("import android.view.View;\n");
+		builder.append("import wang.raye.preioc.find.AbstractFind;\n");
+		builder.append("import android.view.MotionEvent;\n");
+		builder.append("import android.widget.CompoundButton;\n");
+		builder.append("import android.widget.AdapterView;\n");
 
 
-		// 需要处理控件绑定，导入接口
-		if (parentViewBinder == null) {
-			builder.append("import wang.raye.preioc.ViewBinder;\n\n");
-		}
+		builder.append("import wang.raye.preioc.ViewBinder;\n\n");
 		// 创建类名
 		builder.append("public class ").append(className);
 		// 创建被注解处理的类的类型
