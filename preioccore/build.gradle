@@ -1,7 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven'
-version = "1.0.3"
+version = "1.0.4"
 
 def siteUrl = 'https://github.com/RayeWang/PreIOC'    // project homepage
 def gitUrl = 'https://github.com/RayeWang/PreIOC.git' // project git
@@ -37,7 +37,7 @@ bintray {
     configurations = ['archives']
     pkg {
         repo = "maven"
-        name = "PreIOC"    //·¢²¼µ½JCenterÉÏµÄÏîÄ¿Ãû×Ö
+        name = "PreIOC"    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½JCenterï¿½Ïµï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½
         websiteUrl = siteUrl
         vcsUrl = gitUrl
         licenses = ["Apache-2.0"]
