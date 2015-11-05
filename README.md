@@ -1,5 +1,4 @@
 #PreIOC 预编译注解框架，解决在Android端使用注解性能低下，妈妈再也不用担心我在项目中使用注解降低性能了（交流群：123965382）
-
 ### [使用文档](http://git.oschina.net/raywang2014/PreIOC/wikis/home)
 
 目前框架有BindArray（绑定数组），BindById（绑定控件），BindData（绑定数据,适用于适配器），BindDimen（绑定dimen值），BindString（绑定字符串），OnCheckedChanged（OnCheckedChanged监听），OnClick（OnClick监听），OnItemClick（AdapterView的OnItemClick监听），OnTouch（OnTouch监听）这些常用的注解，如果有需要，以后会继续完善<br/>
@@ -10,14 +9,13 @@
 <dependency>
 	<groupId>wang.raye.preioc</groupId>
   	<artifactId>preioccore</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.4</version>
 </dependency>
 ```
 #### Gradle
 ```
-compile 'wang.raye.preioc:preioccore:1.0.2'
+compile 'wang.raye.preioc:preioccore:1.0.4'
 ```
-
 ### 性能指数<br/>
 #### 通过和原生、Xutil、以及PreIOC进行绑定200个TextView和设置OnClick监听耗时进行对比<br/>
 虚拟机<br/>
@@ -25,7 +23,7 @@ compile 'wang.raye.preioc:preioccore:1.0.2'
 真机（红米Note增强版）<br/>
 ![真机（红米Note增强版）](http://git.oschina.net/uploads/images/2015/1008/143705_afeff921_108170.png "真机（红米Note增强版）")<br/>
 ### 简易教程<br/>
-[下载PreIOC.jar](http://git.oschina.net/raywang2014/PreIOC/raw/master/Annotation/app/libs/PreIOC-0.0.1.jar)<br/>
+[下载PreIOC.jar](http://git.oschina.net/raywang2014/PreIOC/raw/master/app/libs/preioccore-1.0.3.jar)<br/>
 #### Android Studio<br/>
 ##### 方法一
 在build.gradle 中配置 
@@ -35,7 +33,6 @@ compile 'wang.raye.preioc:preioccore:1.0.2'
 ##### 方法二
 
 将下载好的PreIOC.jar放在libs文件夹下或通过maven引用，并添加应用，可以手动修改build.gradle，也可以通过右键直接添加应用（AS1.3）<br/>
-
 #### Eclipse<br/>
 将下载好的PreIOC.jar放在libs文件夹下，右击项目，选择Properties->Java Compiler-><br/>
 然后如下设置<br/>
