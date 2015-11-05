@@ -9,12 +9,12 @@
 <dependency>
 	<groupId>wang.raye.preioc</groupId>
   	<artifactId>preioccore</artifactId>
-	<version>1.0.3</version>
+	<version>1.0.4</version>
 </dependency>
 ```
 #### Gradle
 ```
-compile 'wang.raye.preioc:preioccore:1.0.3'
+compile 'wang.raye.preioc:preioccore:1.0.4'
 ```
 ### 性能指数<br/>
 #### 通过和原生、Xutil、以及PreIOC进行绑定200个TextView和设置OnClick监听耗时进行对比<br/>
