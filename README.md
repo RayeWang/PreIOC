@@ -23,7 +23,7 @@ compile 'wang.raye.preioc:preioccore:1.0.4'
 真机（红米Note增强版）<br/>
 ![真机（红米Note增强版）](http://git.oschina.net/uploads/images/2015/1008/143705_afeff921_108170.png "真机（红米Note增强版）")<br/>
 ### 简易教程<br/>
-[下载PreIOC.jar](http://git.oschina.net/raywang2014/PreIOC/raw/master/app/libs/preioccore-1.0.3.jar)<br/>
+[下载PreIOC.jar](http://git.oschina.net/raywang2014/PreIOC/raw/master/app/libs/PreIOC-0.0.4.jar)<br/>
 #### Android Studio<br/>
 ##### 方法一
 在build.gradle 中配置 
