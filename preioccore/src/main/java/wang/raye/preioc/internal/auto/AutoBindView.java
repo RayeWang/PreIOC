@@ -1,5 +1,8 @@
 package wang.raye.preioc.internal.auto;
 
+import android.view.View;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
@@ -15,6 +18,7 @@ import wang.raye.preioc.internal.ViewBindById;
 public class AutoBindView {
 	/** 控件与ID绑定的集合 */
 	private final LinkedHashMap<Integer, ViewBindById> viewIdMap = new LinkedHashMap<>();
+	private final LinkedHashMap<Integer,String> views = new LinkedHashMap<>();
 	/** 保存OnClick事件的id与方法名*/
 	private final LinkedHashMap<Integer,String> onClicks = new LinkedHashMap<>();
 	/** 保存OnCheckedChangeListener事件的id与方法名*/
@@ -25,6 +29,15 @@ public class AutoBindView {
 	private final LinkedHashMap<Integer, String> onItemClicks = new LinkedHashMap<>();
 	/** 属性与资源绑定的*/
 	private final LinkedHashMap<Integer,BindResources> bindResources = new LinkedHashMap<>();
+
+	///////////////设置了监听后的
+	private final ArrayList<Integer> onClicks1 = new ArrayList<>();
+
+	private final ArrayList<Integer> onCheckedChanges1 = new ArrayList<>();
+
+	private final ArrayList<Integer> onTouchs1 = new ArrayList<>();
+
+	private final ArrayList<Integer> onItemClicks1 = new ArrayList<>();
 
 
 	/** 已经创建过的监听，对应onClicks的value,防止每个OnClickLisenter建立一个监听*/
@@ -172,8 +185,8 @@ public class AutoBindView {
 		autoBindMethod(builder);
 		builder.append('\n');
 
-
-		builder.append("}\n");
+		unBindListener(builder);
+		builder.append("\n}\n");
 		return builder.toString();
 	}
 
@@ -228,10 +241,11 @@ public class AutoBindView {
 				.append(bindById.getField().getName());
 		builder.append("\");\n");
 		//绑定onClickListener
+		views.put(bindById.getId(),bindById.getField().getName());
 		bindOnClick(builder,bindById.getId(),bindById.getField().getName());
 		bindOnTouch(builder,bindById.getId(),bindById.getField().getName());
-		bindOnCheckedChanged(builder,bindById.getId(),bindById.getField().getName());
-		bindOnItemClick(builder,bindById.getId(),bindById.getField().getName());
+		bindOnCheckedChanged(builder, bindById.getId(), bindById.getField().getName());
+		bindOnItemClick(builder, bindById.getId(), bindById.getField().getName());
 	}
 
 	/**
@@ -264,6 +278,7 @@ public class AutoBindView {
 			builder.append("    target.").append(viewName).append(".setOnClickListener(").append(methonName).append(");\n");
 			//避免后面的重新设置
 			onClicks.remove(id);
+			onClicks1.add(id);
 		}
 	}
 
@@ -298,6 +313,7 @@ public class AutoBindView {
 			builder.append("    target.").append(viewName).append(".setOnTouchListener(").append(methonName).append(");\n");
 			//避免后面的重新设置
 			onTouchs.remove(id);
+			onTouchs1.add(id);
 		}
 	}
 
@@ -332,6 +348,7 @@ public class AutoBindView {
 			builder.append("    target.").append(viewName).append(".setOnCheckedChangeListener(").append(methonName).append(");\n");
 			//避免后面的重新设置
 			onCheckedChanges.remove(id);
+			onCheckedChanges1.add(id);
 		}
 	}
 
@@ -367,8 +384,10 @@ public class AutoBindView {
 			builder.append("    target.").append(viewName).append(".setOnItemClickListener(").append(methonName).append(");\n");
 			//避免后面的重新设置
 			onItemClicks.remove(id);
+			onItemClicks1.add(id);
 		}
 	}
+
 
 
 	private void bindResource(StringBuilder builder){
@@ -397,5 +416,41 @@ public class AutoBindView {
 					break;
 			}
 		}
+	}
+
+	/**
+	 * 取消View的事件绑定
+	 * @param builder
+	 */
+	private void unBindListener(StringBuilder builder){
+		builder.append("	@Override\n	public void unBinder(final T target){\n");
+		for(Entry<Integer,String> entry : views.entrySet()){
+			if(onClicks1.contains(entry.getKey())){
+				unBindOnClick(builder,entry.getValue());
+			}
+			if(onTouchs1.contains(entry.getKey())){
+				unBindOnTouch(builder,entry.getValue());
+			}
+			if(onCheckedChanges1.contains(entry.getKey())){
+				unBindOnCheckedChanged(builder,entry.getValue());
+			}
+			if(onItemClicks1.contains(entry.getKey())){
+				unBindOnItemClick(builder, entry.getValue());
+			}
+		}
+		builder.append("\n	}");
+	}
+
+	private void unBindOnClick(StringBuilder builder,String name){
+		builder.append("		target.").append(name).append(".setOnClickListener(null);\n");
+	}
+	private void unBindOnTouch(StringBuilder builder,String name){
+		builder.append("		target.").append(name).append(".setOnTouchListener(null);\n");
+	}
+	private void unBindOnCheckedChanged(StringBuilder builder,String name){
+		builder.append("		target.").append(name).append(".setOnCheckedChangeListener(null);\n");
+	}
+	private void unBindOnItemClick(StringBuilder builder,String name){
+		builder.append("		target.").append(name).append(".setOnItemClickListener(null);\n");
 	}
 }

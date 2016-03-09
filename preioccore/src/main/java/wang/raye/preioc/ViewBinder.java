@@ -10,4 +10,6 @@ import wang.raye.preioc.find.AbstractFind;
 public interface ViewBinder<T> {
 
 	public void binder(final AbstractFind finder, final T target, Object source);
+
+	public void unBinder(final T target);
 }

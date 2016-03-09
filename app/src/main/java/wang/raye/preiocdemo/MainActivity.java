@@ -93,4 +93,10 @@ public class MainActivity extends ActionBarActivity {
                 break;
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        PreIOC.unBinder(this);
+        super.onDestroy();
+    }
 }

@@ -32,6 +32,10 @@ public class PreIOC {
 		public void binder(AbstractFind finder, Object target, Object source) {
 
 		}
+		@Override
+		public void unBinder(Object target){
+
+		}
 	};
 	/** 缓存*/
 	private static final Map<Class<?>, ViewBinder<Object>> BINDERS = new LinkedHashMap<>();
@@ -67,6 +71,19 @@ public class PreIOC {
 		binder(target,dialog,new DialogFind());
 	}
 
+	public static void unBinder(Object target){
+		Class<?> targetClass = target.getClass();
+		try {
+			ViewBinder<Object> viewBinder = findViewBinderForClass(targetClass);
+			if (viewBinder != null) {
+				if (debug)
+					Log.i(TAG, "实例化成功，开始绑定:"+viewBinder.getClass().getName());
+				viewBinder.unBinder(target);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Unable to bind views for " + targetClass.getName(), e);
+		}
+	}
 	/**
 	 * 初始化ViewHolder
 	 * @param context
@@ -122,6 +139,7 @@ public class PreIOC {
 			throw new RuntimeException("Unable to bind views for " + targetClass.getName(), e);
 		}
 	}
+
 
 	private static ViewBinder<Object> findViewBinderForClass(Class<?> cls)
 			throws IllegalAccessException, InstantiationException {
